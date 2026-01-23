@@ -1,6 +1,6 @@
 ---
 title: Running Time
-parent: Data Structures
+parent: DSA
 nav_order: 1
 layout: default
 permalink: /dsa/running-time/
