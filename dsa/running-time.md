@@ -2,7 +2,10 @@
 title: Running Time
 parent: Data Structures
 nav_order: 1
+layout: default
+permalink: /dsa/running-time/
 ---
+
 
 
 # Running Time and Asymptotic Notation

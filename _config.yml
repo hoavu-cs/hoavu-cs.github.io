@@ -31,6 +31,9 @@ markdown: kramdown
 kramdown:
   math_engine: mathjax
 
+permalink: pretty
+
+
 
 # Build settings
 theme: just-the-docs
