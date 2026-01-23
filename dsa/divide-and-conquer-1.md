@@ -90,13 +90,13 @@ end
 We now look at merge sort which runs in $O(n \log n)$ time. Recall that selection sort runs in $O(n^2)$ time so this is a significant improvement. First, let us look at the merge procedure that merges two sorted arrays $A$ and $B$.
 
 ```julia
-function merge(A::AbstractVector{T}, B::AbstractVector{T}) where {T<:AbstractFloat}
+function merge(A::Vector{Float64}, B::Vector{Float64})
     n, m = length(A), length(B)
-    C = Vector{T}(undef, n + m)
+    C = Vector{eltype(A)}(undef, n + m)
 
     # Appending infinity to avoid checking boundary conditions
-    A_sent = vcat(A, T(Inf))
-    B_sent = vcat(B, T(Inf))
+    A_sent = vcat(A, Inf)
+    B_sent = vcat(B, Inf)
 
     j1 = j2 = 1
     for j in 1:(n + m)
