@@ -13,16 +13,14 @@ My academic homepage is [here](https://www.hoavu.org/).
 
 ## Contents
 
+**Data Structures and Algorithms**
 <ul>
-  <li><strong>DSA</strong>
-    <ul>
-      {% for page in site.pages %}
-        {% if page.parent == "DSA" %}
-          <li>
-            <a href="{{ page.url }}">{{ page.title }}</a>
-          </li>
-        {% endif %}
-      {% endfor %}
-    </ul>
+
+{% assign dsa_pages = site.pages | where: "parent", "DSA" | sort: "nav_order" %}
+{% for page in dsa_pages %}
+  <li>
+    <a href="{{ page.url }}">{{ page.title }}</a>
   </li>
+{% endfor %}
 </ul>
+
