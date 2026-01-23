@@ -15,7 +15,7 @@ Algorithms are the backbone of computer science. Broadly speaking, an algorithm 
 
 In many ways, algorithms play a role in computer science similar to that of physics in engineering. They underpin a wide range of practical applications, from efficiently sorting large databases and scheduling tasks to finding the shortest path between two locations on a map.
 
-## Running time and asymptotic notation
+## Running Time 
 
 The running time is measured based on the number of basic machine instructions such as memory access and pairwise arithmetic operations. For example, consider the following line of code 
 
@@ -82,12 +82,13 @@ $$
 \sum_{i=0}^{m} r^i = \frac{r^{m+1} - 1}{r-1}, \text{ for } r \neq 1.
 $$
 
-## Asymptotic notation
+## Asymptotic Notation
 
 We often want to measure the growth of the running time as $n$ increases. For example, when $T(n) = n^2/2 + n/2 - 1$, the term $n^2$ dictates the growth in terms of $n$. We often use asymptotic notation to denote the running time to make our life easier. We use the notation $f(n) = O(g(n))$ to say that the growth of $f(n)$ is no more than the growth of $g(n)$.
 
+
 <mark>
-<b>Definition</b>: We say $f(n) = O(g(n))$ if there exist constants $c$ and $n_0$ such that $f(n) \leq c(g(n))$ for all $n \geq n_0$. 
+<b>Definition</b>: We say $f(n) = O(g(n))$ if there exist constants $c$ and $n_0$ such that $f(n) \le c \cdot g(n)$ for all $n \geq n_0$. 
 </mark>
 
 **Example**: $3n^2 + 5n + 10 = O(n^2)$. We can choose $c = 18$ and $n_0 = 1$. This is because for $n \geq 1$, it holds that
@@ -113,18 +114,21 @@ $$
 \lim_{n \rightarrow \infty} \frac{n^2/2 + n/2 - 1}{n^2} = \lim_{n \rightarrow \infty} (1/2 + 1/(2n) - 1/(n^2)) = 1/2.
 $$
 
-This implies that $n^2/2 + n/2 - 1 = O(n^2)$.
 
 
-So we say that the running time of selection sort is $O(n^2)$. Let's look at another example: $n + 10 \ln n = O(n)$. We can plot $n$ and $10 \ln n$ to see that $n > 10 \ln n$ for $n \geq 40$.
+**Example**: $n + 10 \ln n = O(n)$. We can plot $n$ and $10 \ln n$ to see that $n > 10 \ln n$ for $n \ge 40$.
 
-Thus, for $n \geq 40$, we have
+![Big-O plot 2](/dsa/assets/bigO-fig2.png)
+
+Thus, for $n \ge 40$, we have
 
 $$
 n + 10 \ln n \leq n + n = 2n.
 $$
 
-So in this case $c = 2$ and $n_0 = 40$. We can also use limit approach, but before that recall L'hospital rule that if $\lim f'(n)/g'(n)$ exists then and $\lim f(n)/g(n) = \lim f'(n)/g'(n)$. We have
+So in this case $c = 2$ and $n_0 = 40$. 
+
+We could also use limit approach. But before that we need to recall L'hospital rule that if $\lim f'(n)/g'(n)$ exists then and $\lim f(n)/g(n) = \lim f'(n)/g'(n)$ (assuming the derivatives exist). We have
 
 $$
 \lim_{n \rightarrow  \infty} \frac{n + 10 \ln n}{n} = 
@@ -135,54 +139,74 @@ $$
 
 **Exercise**: Show that $2 \sqrt{n}  + n^{1/3} \log_2 n = O(\sqrt{n})$.
 
-**Definition:** If $f(n) = O(g(n))$, then $g(n) = \Omega(f(n))$ or equivalently $\lim_{n \rightarrow \infty} \frac{g(n)}{f(n)} > 0$.
+<mark>
+<b>Definition</b>: If $f(n) = O(g(n))$, then $g(n) = \Omega(f(n))$.
+</mark>
 
-We use the $\Theta$ notation to denote "similar growth rate".
+To summarize $f=O(g(n))$ means that $f(n)$ grows no faster than $g(n)$ and $f(n) = \Omega(g(n))$ means that $f(n)$ grows no slower than $g(n)$. 
 
-**Definition**: We say $f(n) = \Theta(g(n))$ if $f(n) = O(g(n))$ and $g(n) = O(f(n))$. 
+We now need a notation to denote "similar growth rate".
 
+<mark>
+<b>Definition:</b> We say $f(n) = \Theta(g(n))$ if $f(n) = O(g(n))$ and $g(n) = O(f(n))$. 
+</mark>
 
 
 Let us consider some examples.
 
-- I claim that $2 n^{100} + n^{99} = \Theta(n^{100})$. To see this,
+**Example:** I claim that $2 n^{100} + n^{99} = \Theta(n^{100})$. To see this,
 
 $$
-\lim_{n \rightarrow \infty} \frac{2 n^{100} -n^{99}}{n^{100}} = 2 
+\lim_{n \rightarrow \infty} \frac{2 n^{100} -n^{99}}{n^{100}} = 2 \implies \lim_{n \rightarrow \infty} \frac{n^{100}}{2 n^{100} - n^{99}} = \lim_{n \rightarrow \infty} \frac{1}{2 - 1/n} = \frac{1}{2}.
 $$
 
-and $0 < 2 < \infty$.
+This shows that $2 n^{100} + n^{99} = O(n^{100})$ and $n^{100} = O(2 n^{100} + n^{99})$ and therefore $2 n^{100} + n^{99} = \Theta(n^{100})$.
+Specifically, if you want to use the limit rule to show that $f(n) = \Theta(g(n))$, you need to show that
 
-- Exercise: Show that $n^{1.99} = O(n^2)$ but $n^{1.99} \neq \Theta(n^2)$.
-- Exercise: Show that if $n$ is a power of 2, then $2+4+8+\ldots+n = \Theta(n^2)$.
+$$
+0 < \lim_{n \rightarrow \infty} \frac{f(n)}{g(n)} < \infty.
+$$
+
+This means neither $f(n)$ nor $g(n)$ grows faster than the other.
+
+**Exercise:** Show that $n^{1.99} = O(n^2)$ but $n^{1.99} \neq \Theta(n^2)$.
+
+**Exercise:** Show that if $n$ is a power of 2, then $2+4+8+\ldots+n = \Theta(n^2)$.
 
 Finally, $o$ and $\omega$ are used to denote a "strictly slower growth rate" and "strictly faster growth rate" respectively.
 
-**Definition**: We say
+<mark>
+<b>Definition</b>: We say $f(n) = o(g(n))$ if for any constant $c > 0$, there exists a constant $n_0$ such that $f(n) < c \cdot g(n)$ for all $n \geq n_0$.
+</mark>
 
-- $f(n) = o(g(n))$ if
+This can also be shown using limits. Specifically,$f(n) = o(g(n))$ if
 
 $$
 \lim_{n \rightarrow \infty} \frac{f(n)}{g(n)} = 0.
 $$
 
-- $f(n) = \omega(g(n))$ if
+This means that $f(n)$ grows strictly slower than $g(n)$.
+
+<mark>
+<b>Definition</b>: We say $f(n) = \omega(g(n))$ if $g(n) = o(f(n))$.
+</mark>
+
+This means that $f(n)$ grows strictly faster than $g(n)$. This can also be shown using limits. Specifically, $f(n) = \omega(g(n))$ if
 
 $$
 \lim_{n \rightarrow \infty} \frac{f(n)}{g(n)} = \infty.
 $$
 
-Note that $f(n) = o(g(n))$ is the same as $g(n) = \omega(f(n))$.
 
 Let's work on some examples.
 
-- I claim that $\log_2 n = o(n^{0.1})$. To see this,
+**Example:** I claim that $\log_2 n = o(n^{0.1})$. To see this,
 
 $$
 \lim_{n \rightarrow \infty} \frac{\log_2 n}{n^{0.1}} =  \lim_{n \rightarrow \infty} \frac{\ln n}{\ln 2 \times   n^{0.1}} =  \frac{1}{\ln 2}\lim_{n \rightarrow \infty} \frac{\ln n}{   n^{0.1}} = \frac{1}{\ln 2}\lim_{n \rightarrow \infty} \frac{1/n}{0.1 n^{-0.9}} = \frac{1}{\ln 2}\lim_{n \rightarrow \infty} \frac{10}{n^{0.1}} = 0.
 $$
 
-- I claim that $3^n = \omega(2^n)$. To see this,
+**Example:** I claim that $3^n = \omega(2^n)$. To see this,
 
 $$
 \lim_{n \rightarrow \infty} \frac{3^n}{2^n} = \lim_{n \rightarrow \infty} (3/2)^n = \infty.
@@ -196,11 +220,11 @@ To recap:
 - $f(n) = o(g(n))$ means that $f(n)$'s growth is strictly slower than $g(n)$'s growth.
 - $f(n) = \omega(g(n))$ means that $f(n)$'s growth is strictly faster than $g(n)$'s growth.
 
-### Useful facts
+## Useful Facts
 
 Let us go over some useful facts. Some proofs are omitted and left as exercise.
 
-- A polynomial has the same growth rate as its most significant terms. E.g., $3n^3 - n^2 +100 n = \Theta(n^3)$.
+**Fact 1:** A polynomial has the same growth rate as its most significant terms. E.g., $3n^3 - n^2 +100 n = \Theta(n^3)$.
 - A polynomial always grows faster than a poly-logarithmic. E.g.,
 
 $$
@@ -211,7 +235,7 @@ n \log^2 n & = o(n^{1.01}), \ldots
 \end{align*}
 $$
 
-- An exponential function always grow faster than a polynomial function (as long as the base is larger than 1). E.g.,
+**Fact 2:** An exponential function always grow faster than a polynomial function (as long as the base is larger than 1). E.g.,
 
 $$
 \begin{align*}
@@ -220,23 +244,27 @@ n^{10} & = o({1.01}^{2n}), \ldots
 \end{align*}
 $$
 
-- For any constant $c$, $1^c +2^c +\ldots+n^c = \Theta(n^{c+1})$. E.g., $1^2 + 2^2 + \ldots + n^2 = \Theta(n^3)$. Let's try to prove this. First, see that
+**Fact 3:** For any constant $c$, $1^c +2^c +\ldots+n^c = \Theta(n^{c+1})$. E.g., $1^2 + 2^2 + \ldots + n^2 = \Theta(n^3)$. Let's try to prove this. First, see that
 
 $$
 1^c + 2^c + \ldots + n^c \leq \underbrace{n^c + n^c +\ldots + n^c}_{n \text{ times}} \leq n^{c+1} \implies 1^c + 2^c + \ldots + n^c = O(n^{c+1}).
 $$
 
-It remains to show that $1^c + \ldots + n^c =\Omega(n^{c+1})$. Here, we use a method called approximation by integrals.
+It remains to show that $1^c + \ldots + n^c =\Omega(n^{c+1})$. Here, we use a method called approximation by integrals. Look at the following figure.
 
-Note that the area under the boxes is given by $1^c + 2^c + \ldots + n^c$. This area is larger than the area under the curve $x^c$ from $0$ to $n$. So
+![Approximation by integrals](/dsa/assets/integration-approximation.png)
+
+Note that the area under the boxes is given by $1^c + 2^c + \ldots + n^c$. This area is larger than the area under the curve $x^c$ from $0$ to $n$. Hence,
 
 $$
-1^c + 2^c + \ldots + n^c \geq \int_0^n x^c dx = \frac{n^{c+1}}{c+1} \implies 1^c + 2^c + \ldots + n^c = \Omega(n^{c+1}) \text{, since $c$ is a constant}.
+1^c + 2^c + \ldots + n^c \geq \int_0^n x^c dx = \frac{n^{c+1}}{c+1} \implies 1^c + 2^c + \ldots + n^c = \Omega(n^{c+1}).
 $$
 
-- For any constant $c$, we have $c = O(1)$.
-- If $a < b$, then $a^n = o(b^n)$. E.g., $2^n = o(3^n)$.
-- **A common pitfall.** We have to be careful when dealing with sums where the number of terms is not fixed. For example, the following proof is **wrong**.
+**Fact 4:** For any constant $c$, we have $c = O(1)$.
+
+**Fact 5:** If $a < b$, then $a^n = o(b^n)$. E.g., $2^n = o(3^n)$.
+
+**A common pitfall:** We have to be careful when dealing with sums where the number of terms is not fixed. For example, the following proof is **wrong**.
 
 $$
 1+2+3+\ldots+n = O(1) + O(1) + \ldots + O(1) = O(n).
