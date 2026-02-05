@@ -6,6 +6,7 @@ layout: default
 permalink: /dsa/running-time/
 ---
 
+
 # Running Time and Asymptotic Notation
 
 Algorithms are the backbone of computer science. Broadly speaking, an algorithm is a precise, unambiguous set of instructions designed to solve a specific problem. Analyzing an algorithm typically involves two main components:
@@ -15,7 +16,9 @@ Algorithms are the backbone of computer science. Broadly speaking, an algorithm 
 
 In many ways, algorithms play a role in computer science similar to that of physics in engineering. They underpin a wide range of practical applications, from efficiently sorting large databases and scheduling tasks to finding the shortest path between two locations on a map.
 
-## Running Time 
+<div class="sectionlecturebox">
+Running Time 
+</div>
 
 The running time is measured based on the number of basic machine instructions such as memory access and pairwise arithmetic operations. For example, consider the following line of code 
 
@@ -25,7 +28,7 @@ A[i] = A[i] + 1
 
 We have memory access operations (accessing `A[i]`) and a pairwise arithmetic operation. For the moment, let us adopt the following view: we approximate the running time by counting the number of instructions executed up to a constant factor.
 
-Let us look at the following example that sorts an array `A[1...n]` of integers in increasing order. The algorithm is called selection sort. The idea is simple, scan through `A[1...n]` to find the smallest element and put it in `A[1]`, then scan through `A[2...n]` to find the smallest element and put it in `A[2]`, and so on.
+Let us look at the following example that sorts an array `A[1:n]` of integers in increasing order. The algorithm is called selection sort. The idea is simple, scan through `A[1:n]` to find the smallest element and put it in `A[1]`, then scan through `A[2:n]` to find the smallest element and put it in `A[2]`, and so on.
 
 ```julia
 function selection_sort!(A)
@@ -44,8 +47,8 @@ function selection_sort!(A)
 end
 ```
 
-- Lines 1, 2, 3 and 6 run $n-1$ times.
-- Lines 4, 5, and 6 run at most $(n-1) + (n-2) + (n-3) + \ldots + 1$ times each.
+- Lines 1, 2, 3 and 6 each runs $n-1$ times 
+- Lines 4, 5, and 6 each runs at most $(n-1) + (n-2) + (n-3) + \ldots + 1$ times.
 - Line 7 runs once.
 
 Recall that 
@@ -62,10 +65,10 @@ $$
 
 We will define the big $O$ notation later. For now, think of this as saying that the running time grows quadratically as the input size $n$ increases.
 
-**Exercise**: What is the running time of the following dummy algorithm in terms of $n$?
+**Exercise**: What is the running time of the following dummy function in terms of $n$?
 
 ```julia
-# A dummy program
+# A dummy function
 function dummy_algorithm(n)
     for j in 1:n
         x = 0
@@ -76,20 +79,24 @@ function dummy_algorithm(n)
 end
 ```
 
-Hint: use the geometric series formula:
+Hint: use the geometric series formula below.
 
 $$
+\boxed{
 \sum_{i=0}^{m} r^i = \frac{r^{m+1} - 1}{r-1}, \text{ for } r \neq 1.
+}
 $$
 
-## Asymptotic Notation
+<div class="sectionlecturebox">
+Asymptotic Notation
+</div>
 
 We often want to measure the growth of the running time as $n$ increases. For example, when $T(n) = n^2/2 + n/2 - 1$, the term $n^2$ dictates the growth in terms of $n$. We often use asymptotic notation to denote the running time to make our life easier. We use the notation $f(n) = O(g(n))$ to say that the growth of $f(n)$ is no more than the growth of $g(n)$.
 
 
-<mark>
-<b>Definition</b>: We say $f(n) = O(g(n))$ if there exist constants $c$ and $n_0$ such that $f(n) \le c \cdot g(n)$ for all $n \geq n_0$. 
-</mark>
+<div class="lecturebox">
+<b>Definition</b>: We say $f(n) = O(g(n))$ if there exist constants $c > 0$ and $n_0$ such that $f(n) \le c \cdot g(n)$ for all $n \geq n_0$. 
+</div>
 
 **Example**: $3n^2 + 5n + 10 = O(n^2)$. We can choose $c = 18$ and $n_0 = 1$. This is because for $n \geq 1$, it holds that
 
@@ -139,17 +146,17 @@ $$
 
 **Exercise**: Show that $2 \sqrt{n}  + n^{1/3} \log_2 n = O(\sqrt{n})$.
 
-<mark>
-<b>Definition</b>: If $f(n) = O(g(n))$, then $g(n) = \Omega(f(n))$.
-</mark>
+<div class="lecturebox">
+<b>Definition</b>: $g(n) = \Omega(f(n))$ if $f(n) = O(g(n))$.
+</div>
 
 To summarize $f=O(g(n))$ means that $f(n)$ grows no faster than $g(n)$ and $f(n) = \Omega(g(n))$ means that $f(n)$ grows no slower than $g(n)$. 
 
 We now need a notation to denote "similar growth rate".
 
-<mark>
+<div class="lecturebox">
 <b>Definition:</b> We say $f(n) = \Theta(g(n))$ if $f(n) = O(g(n))$ and $g(n) = O(f(n))$. 
-</mark>
+</div>
 
 
 Let us consider some examples.
@@ -157,7 +164,7 @@ Let us consider some examples.
 **Example:** I claim that $2 n^{100} + n^{99} = \Theta(n^{100})$. To see this,
 
 $$
-\lim_{n \rightarrow \infty} \frac{2 n^{100} -n^{99}}{n^{100}} = 2 \implies \lim_{n \rightarrow \infty} \frac{n^{100}}{2 n^{100} - n^{99}} = \lim_{n \rightarrow \infty} \frac{1}{2 - 1/n} = \frac{1}{2}.
+\lim_{n \rightarrow \infty} \frac{2 n^{100} -n^{99}}{n^{100}} = 2 \text{, and } \lim_{n \rightarrow \infty} \frac{n^{100}}{2 n^{100} - n^{99}} = \lim_{n \rightarrow \infty} \frac{1}{2 - 1/n} = \frac{1}{2}.
 $$
 
 This shows that $2 n^{100} + n^{99} = O(n^{100})$ and $n^{100} = O(2 n^{100} + n^{99})$ and therefore $2 n^{100} + n^{99} = \Theta(n^{100})$.
@@ -167,7 +174,7 @@ $$
 0 < \lim_{n \rightarrow \infty} \frac{f(n)}{g(n)} < \infty.
 $$
 
-This means neither $f(n)$ nor $g(n)$ grows faster than the other.
+This means neither $f(n)$ nor $g(n)$ grows strictly faster than the other.
 
 **Exercise:** Show that $n^{1.99} = O(n^2)$ but $n^{1.99} \neq \Theta(n^2)$.
 
@@ -175,9 +182,9 @@ This means neither $f(n)$ nor $g(n)$ grows faster than the other.
 
 Finally, $o$ and $\omega$ are used to denote a "strictly slower growth rate" and "strictly faster growth rate" respectively.
 
-<mark>
+<div class="lecturebox">
 <b>Definition</b>: We say $f(n) = o(g(n))$ if for any constant $c > 0$, there exists a constant $n_0$ such that $f(n) < c \cdot g(n)$ for all $n \geq n_0$.
-</mark>
+</div>
 
 This can also be shown using limits. Specifically,$f(n) = o(g(n))$ if
 
@@ -187,9 +194,9 @@ $$
 
 This means that $f(n)$ grows strictly slower than $g(n)$.
 
-<mark>
+<div class="lecturebox">
 <b>Definition</b>: We say $f(n) = \omega(g(n))$ if $g(n) = o(f(n))$.
-</mark>
+</div>
 
 This means that $f(n)$ grows strictly faster than $g(n)$. This can also be shown using limits. Specifically, $f(n) = \omega(g(n))$ if
 
@@ -220,12 +227,14 @@ To recap:
 - $f(n) = o(g(n))$ means that $f(n)$'s growth is strictly slower than $g(n)$'s growth.
 - $f(n) = \omega(g(n))$ means that $f(n)$'s growth is strictly faster than $g(n)$'s growth.
 
-## Useful Facts
+<div class="sectionlecturebox">
+Useful Facts
+</div>
 
 Let us go over some useful facts. Some proofs are omitted and left as exercise.
 
 **Fact 1:** A polynomial has the same growth rate as its most significant terms. E.g., $3n^3 - n^2 +100 n = \Theta(n^3)$.
-- A polynomial always grows faster than a poly-logarithmic. E.g.,
+- A polynomial always grows faster than a poly-logarithmic. For example,
 
 $$
 \begin{align*}
@@ -235,7 +244,7 @@ n \log^2 n & = o(n^{1.01}), \ldots
 \end{align*}
 $$
 
-**Fact 2:** An exponential function always grow faster than a polynomial function (as long as the base is larger than 1). E.g.,
+**Fact 2:** An exponential function always grow faster than a polynomial function (as long as the base is larger than 1). For instance,
 
 $$
 \begin{align*}
@@ -250,11 +259,11 @@ $$
 1^c + 2^c + \ldots + n^c \leq \underbrace{n^c + n^c +\ldots + n^c}_{n \text{ times}} \leq n^{c+1} \implies 1^c + 2^c + \ldots + n^c = O(n^{c+1}).
 $$
 
-It remains to show that $1^c + \ldots + n^c =\Omega(n^{c+1})$. Here, we use a method called approximation by integrals. Look at the following figure.
+It remains to show that $1^c + \ldots + n^c =\Omega(n^{c+1})$. Here, we use a method called approximation by integrals. Let us take a look at the figure below.
 
 ![Approximation by integrals](/dsa/assets/integration-approximation.png)
 
-Note that the area under the boxes is given by $1^c + 2^c + \ldots + n^c$. This area is larger than the area under the curve $x^c$ from $0$ to $n$. Hence,
+Note that the area under the boxes is given by $1^c + 2^c + \ldots + n^c$ since the width of each box is $1$ and the height of the box at position $i$ is $i^c$. This area is larger than the area under the curve $x^c$ from $0$ to $n$. Hence,
 
 $$
 1^c + 2^c + \ldots + n^c \geq \int_0^n x^c dx = \frac{n^{c+1}}{c+1} \implies 1^c + 2^c + \ldots + n^c = \Omega(n^{c+1}).
@@ -270,4 +279,4 @@ $$
 1+2+3+\ldots+n = O(1) + O(1) + \ldots + O(1) = O(n).
 $$
 
-We showed that $1+2+\ldots+n = n(n+1) = \Theta(n^2)$ which grows faster than $O(n)$. What exactly went wrong here? For any constant $i$, it is true that $i = O(1)$; however, in the sum $\sum_{i=1}^n i$, we can see that $i$ is not a constant. It ranges over a set of values from $1$ to $n$ which depends on $n$.
+We showed that $1+2+\ldots+n = \frac{n(n+1)}{2} = \Theta(n^2)$ which grows faster than $O(n)$. What exactly went wrong here? For any constant $i$, it is true that $i = O(1)$; however, in the sum $\sum_{i=1}^n i$, we can see that $i$ is not a constant. It ranges over a set of values from $1$ to $n$ which depends on $n$.
