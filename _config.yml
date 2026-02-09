@@ -32,8 +32,15 @@ kramdown:
 
 permalink: pretty
 
+defaults:
+  - scope:
+      path: ""
+    values:
+      head-extra:
+        - head_custom.html
+
 # Build settings
-theme: just-the-docs
+theme: beautiful-jekyll-theme
 
 # Exclude from processing.
 # The following items will not be processed, by default.

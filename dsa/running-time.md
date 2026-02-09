@@ -6,7 +6,6 @@ layout: default
 permalink: /dsa/running-time/
 ---
 
-
 # Running Time and Asymptotic Notation
 
 Algorithms are the backbone of computer science. Broadly speaking, an algorithm is a precise, unambiguous set of instructions designed to solve a specific problem. Analyzing an algorithm typically involves two main components:
@@ -17,10 +16,10 @@ Algorithms are the backbone of computer science. Broadly speaking, an algorithm 
 In many ways, algorithms play a role in computer science similar to that of physics in engineering. They underpin a wide range of practical applications, from efficiently sorting large databases and scheduling tasks to finding the shortest path between two locations on a map.
 
 <div class="sectionlecturebox">
-Running Time 
+Running Time
 </div>
 
-The running time is measured based on the number of basic machine instructions such as memory access and pairwise arithmetic operations. For example, consider the following line of code 
+The running time is measured based on the number of basic machine instructions such as memory access and pairwise arithmetic operations. For example, consider the following line of code
 
 ```julia
 A[i] = A[i] + 1
@@ -47,11 +46,11 @@ function selection_sort!(A)
 end
 ```
 
-- Lines 1, 2, 3 and 6 each runs $n-1$ times 
+- Lines 1, 2, 3 and 6 each runs $n-1$ times.
 - Lines 4, 5, and 6 each runs at most $(n-1) + (n-2) + (n-3) + \ldots + 1$ times.
 - Line 7 runs once.
 
-Recall that 
+Recall that
 
 $$
 1+2+\ldots+n = n(n+1)/2.
@@ -93,9 +92,8 @@ Asymptotic Notation
 
 We often want to measure the growth of the running time as $n$ increases. For example, when $T(n) = n^2/2 + n/2 - 1$, the term $n^2$ dictates the growth in terms of $n$. We often use asymptotic notation to denote the running time to make our life easier. We use the notation $f(n) = O(g(n))$ to say that the growth of $f(n)$ is no more than the growth of $g(n)$.
 
-
 <div class="lecturebox">
-<b>Definition</b>: We say $f(n) = O(g(n))$ if there exist constants $c > 0$ and $n_0$ such that $f(n) \le c \cdot g(n)$ for all $n \geq n_0$. 
+<b>Definition</b>: We say $f(n) = O(g(n))$ if there exist constants $c > 0$ and $n_0$ such that $f(n) \le c \cdot g(n)$ for all $n \geq n_0$.
 </div>
 
 **Example**: $3n^2 + 5n + 10 = O(n^2)$. We can choose $c = 18$ and $n_0 = 1$. This is because for $n \geq 1$, it holds that
@@ -106,7 +104,7 @@ $$
 
 **Example**: $n^2= O(1.5^n)$. We can choose $c = 1$ and $n_0 = 14$. From $n = 14$ onward, it holds that $n^2 \le 1.5^n$.
 
-![Big-O plot 1](/dsa/assets/bigO-fig1.png)
+![Big-O plot 1](/dsa/assets/running-time/bigO-fig1.png)
 
 One can also use the limit approach to show that $f(n) = O(g(n))$. Specifically, if
 
@@ -114,18 +112,15 @@ $$
 \lim_{n \rightarrow \infty} \frac{f(n)}{g(n)} = \textup{constant}  < \infty
 $$
 
-
 **Example**: See that
 
 $$
 \lim_{n \rightarrow \infty} \frac{n^2/2 + n/2 - 1}{n^2} = \lim_{n \rightarrow \infty} (1/2 + 1/(2n) - 1/(n^2)) = 1/2.
 $$
 
-
-
 **Example**: $n + 10 \ln n = O(n)$. We can plot $n$ and $10 \ln n$ to see that $n > 10 \ln n$ for $n \ge 40$.
 
-![Big-O plot 2](/dsa/assets/bigO-fig2.png)
+![Big-O plot 2](/dsa/assets/running-time/bigO-fig2.png)
 
 Thus, for $n \ge 40$, we have
 
@@ -133,7 +128,7 @@ $$
 n + 10 \ln n \leq n + n = 2n.
 $$
 
-So in this case $c = 2$ and $n_0 = 40$. 
+So in this case $c = 2$ and $n_0 = 40$.
 
 We could also use limit approach. But before that we need to recall L'hospital rule that if $\lim f'(n)/g'(n)$ exists then and $\lim f(n)/g(n) = \lim f'(n)/g'(n)$ (assuming the derivatives exist). We have
 
@@ -150,14 +145,13 @@ $$
 <b>Definition</b>: $g(n) = \Omega(f(n))$ if $f(n) = O(g(n))$.
 </div>
 
-To summarize $f=O(g(n))$ means that $f(n)$ grows no faster than $g(n)$ and $f(n) = \Omega(g(n))$ means that $f(n)$ grows no slower than $g(n)$. 
+To summarize $f=O(g(n))$ means that $f(n)$ grows no faster than $g(n)$ and $f(n) = \Omega(g(n))$ means that $f(n)$ grows no slower than $g(n)$.
 
 We now need a notation to denote "similar growth rate".
 
 <div class="lecturebox">
-<b>Definition:</b> We say $f(n) = \Theta(g(n))$ if $f(n) = O(g(n))$ and $g(n) = O(f(n))$. 
+<b>Definition:</b> We say $f(n) = \Theta(g(n))$ if $f(n) = O(g(n))$ and $g(n) = O(f(n))$.
 </div>
-
 
 Let us consider some examples.
 
@@ -186,7 +180,7 @@ Finally, $o$ and $\omega$ are used to denote a "strictly slower growth rate" and
 <b>Definition</b>: We say $f(n) = o(g(n))$ if for any constant $c > 0$, there exists a constant $n_0$ such that $f(n) < c \cdot g(n)$ for all $n \geq n_0$.
 </div>
 
-This can also be shown using limits. Specifically,$f(n) = o(g(n))$ if
+This can also be shown using limits. Specifically, $f(n) = o(g(n))$ if
 
 $$
 \lim_{n \rightarrow \infty} \frac{f(n)}{g(n)} = 0.
@@ -203,7 +197,6 @@ This means that $f(n)$ grows strictly faster than $g(n)$. This can also be shown
 $$
 \lim_{n \rightarrow \infty} \frac{f(n)}{g(n)} = \infty.
 $$
-
 
 Let's work on some examples.
 
@@ -261,7 +254,7 @@ $$
 
 It remains to show that $1^c + \ldots + n^c =\Omega(n^{c+1})$. Here, we use a method called approximation by integrals. Let us take a look at the figure below.
 
-![Approximation by integrals](/dsa/assets/integration-approximation.png)
+![Approximation by integrals](/dsa/assets/running-time/integration-approximation.png)
 
 Note that the area under the boxes is given by $1^c + 2^c + \ldots + n^c$ since the width of each box is $1$ and the height of the box at position $i$ is $i^c$. This area is larger than the area under the curve $x^c$ from $0$ to $n$. Hence,
 

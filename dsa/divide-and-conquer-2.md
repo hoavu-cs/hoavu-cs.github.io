@@ -9,7 +9,7 @@ permalink: /dsa/divide-and-conquer-2/
 # Divide and Conquer Part 2 (Majority Element, Strassen's Algorithm)
 
 <div class="sectionlecturebox">
-<b>Finding the Majority </b>
+Finding the Majority
 </div>
 
 Consider an array $A[1:n]$ of elements that are not necessarily numbers. We assume that we can compare any two elements to determine whether they are equal.
@@ -20,8 +20,6 @@ A naive algorithm is the following: for each element $A[i]$, scan through the en
 ---
 
 ### A Divide-and-Conquer Algorithm
-
-
 
 **Claim:** Let $L, R$ be a partition of $A$. If $A$ has a majority element, then that element must be the majority of **either $L$ or $R$**.
 
@@ -36,9 +34,7 @@ which contradicts the assumption that $z$ is the majority element of $A$. Hence,
 
 ---
 
-
 We recursively find the majority elements of the left half $L$ and right half $R$, denoted by $x$ and $y$, respectively. Finally, we check whether $x$ or $y$ is the majority element of $A$ by counting their occurrences in $A$. If either $x$ or $y$ appears more than $n/2$ times, we return that element. Otherwise, we conclude that $A$ has no majority element.
-
 
 ```julia
 function majority(A)
@@ -69,15 +65,12 @@ end
 
 The running time is described by the recurrence $T(n) = 2T(n/2) + O(n)$ which is $O(n \log n)$ by the Master theorem.
 
-
-
 ### An Improved Divide and Conquer Algorithm
 
 We can do better by reducing the problem size more aggressively. The key idea is to pair up elements and discard pairs that contain different elements, since at most one of them can be the majority element. Let us try something like this.
-Suppose $A = [a,b,a,a,c,c,a,a]$. We can pair up every two elements. If the two elements are equal, we keep one copy in $B$; if they are different, we discard both. In this case, we get pairs $(a,b)$, $(a,a)$, $(c,c)$, and $(a,a)$. The resulting array is $B = [a, c, a]$. We observe that if $a$ is the majority element of $A$, then it must also be the majority element of $B$. 
+Suppose $A = [a,b,a,a,c,c,a,a]$. We can pair up every two elements. If the two elements are equal, we keep one copy in $B$; if they are different, we discard both. In this case, we get pairs $(a,b)$, $(a,a)$, $(c,c)$, and $(a,a)$. The resulting array is $B = [a, c, a]$. We observe that if $a$ is the majority element of $A$, then it must also be the majority element of $B$.
 
 The converse is not necessarily true: for example $A=[a,a,b,c,c,d]$ gives $B=[a]$, where $a$ is the majority of $B$ but not of $A$.
-
 
 To see why this is the case, let $m$ be the majority element of $A$. Consider the pairs formed from $A$:
 
@@ -120,7 +113,6 @@ $$
 x > t.
 $$
 
-
 When forming the reduced list $B$:
 
 - Each pair $(m,m)$ contributes **one** copy of $m$, so $m$ appears exactly $x$ times in $B$.
@@ -154,11 +146,10 @@ Below is the description of the algorithm given this idea.
 
 1. **Handle the odd-length case.**
 
-   If $n$ is odd, check whether $A[1]$ is the majority element by counting its occurrences in $A$. If it occurs more than $\frac{n}{2}$ times, return $A[1]$.Otherwise, discard $A[1]$. Since it is not the majority, removing it does **not** change whether a majority exists.
-   This counting step takes $O(n)$ time. After discarding $A[1]$, the array has even length.  
+   If $n$ is odd, check whether $A[1]$ is the majority element by counting its occurrences in $A$. If it occurs more than $\frac{n}{2}$ times, return $A[1]$. Otherwise, discard $A[1]$. Since it is not the majority, removing it does **not** change whether a majority exists.
+   This counting step takes $O(n)$ time. After discarding $A[1]$, the array has even length.
 
    We note that if we discard $A[1]$, if $A$ has a majority element, it remains the majority element in the reduced array. Some non-majority element may become the majority after discarding $A[1]$, but we will verify the candidate at the end so this is not a problem.
-
 
 2. **Pair up elements and build a reduced array $B$.**
 
@@ -187,7 +178,6 @@ $$
 which solves to $T(n) = O(n)$.
 
 ---
-
 
 The algorithm's Julia implementation is as follows:
 
@@ -236,11 +226,10 @@ end
 ---
 
 <div class="sectionlecturebox">
-<b>Strassen's Algorithm for Matrix Multiplication </b>
+Strassen's Algorithm for Matrix Multiplication
 </div>
 
-
-Given two $n \times n$ matrices $X$ and $Y$. The $(i,j)$ entry (where $i,j \in \{1,\ldots,n\}$) of the product matrix $Z = XY$ is defined as  
+Given two $n \times n$ matrices $X$ and $Y$. The $(i,j)$ entry (where $i,j \in \{1,\ldots,n\}$) of the product matrix $Z = XY$ is defined as
 
 $$
 Z_{ij} =\sum_{k=1}^n X_{ik} Y_{kj}.
@@ -249,7 +238,6 @@ $$
 In other words, $Z_{ij}$ is computed by taking the dot product of the $i$-th row of $X$ with the $j$-th column of $Y$. For simplicity, we will assume that $n$ is a power of 2; otherwise, we can pad the matrices with zeros to the next power of 2.
 
 What is the running time of the naive algorithm which computes each entry of $C$ using the above formula? There are $n^2$ entries to compute, each of which takes $O(n)$ time. Hence, the running time is $O(n^3)$.
-
 
 We now describe a more clever algorithm by Strassen. The first observation (which is not hard to prove but we will just assume) is that matrix multiplication can be done blockwise.
 
@@ -285,9 +273,9 @@ $$
 \end{bmatrix} = \ldots
 $$
 
-Let $T(n)$ be the time to multiply two $n \times n$ matrices. Note that $T(n) \geq \Omega(n^2)$ because just reading the input takes $\Omega(n^2)$ time. The above approach yields the following recurrence: 
+Let $T(n)$ be the time to multiply two $n \times n$ matrices. Note that $T(n) \geq \Omega(n^2)$ because just reading the input takes $\Omega(n^2)$ time. The above approach yields the following recurrence:
 
-$$ T(n)=8T(n/2) + O(n^2) $$. 
+$$ T(n)=8T(n/2) + O(n^2). $$
 
 This is because:
 
@@ -298,7 +286,7 @@ Applying the Master theorem, this gives us $O(n^3)$, which is not any better tha
 
 Strassen's insight is that we can reduce the number of $(n/2) \times (n/2)$ matrix multiplications from 8 to 7 by doing some clever additions and subtractions.
 
-- $P_1 = A(F-H)$. 
+- $P_1 = A(F-H)$.
 - $P_2 = (A+B)H$.
 - $P_3 = (C+D)E$.
 - $P_4 = D(G-E)$.
@@ -319,7 +307,7 @@ $$
 
 Now, compute the following blocks using $P_1, \ldots, P_7$:
 
-- $AE+BG = P_5+ P_4 - P_2 + P_6$. 
+- $AE+BG = P_5+ P_4 - P_2 + P_6$.
 - $AF + BH = P_1 + P_2$.
 - $CE + DG = P_3 + P_4$.
 - $CF + DH = P_1 + P_5 - P_3 - P_7$.
@@ -377,4 +365,3 @@ function strassen_multiply(A::AbstractMatrix, B::AbstractMatrix)
     return C
 end
 ```
-

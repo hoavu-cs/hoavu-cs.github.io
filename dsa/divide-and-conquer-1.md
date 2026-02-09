@@ -9,14 +9,14 @@ permalink: /dsa/divide-and-conquer-1/
 # Divide and Conquer Part 1 (Tiling Puzzle, Binary Search, Merge Sort, Solving Recurrences)
 
 <div class="sectionlecturebox">
-Introduction 
+Introduction
 </div>
 
 Divide-and-conquer is a powerful algorithmic paradigm. The main ideas behind divide-and-conquer algorithms are as follows.
 
-* We have a problem of size $n$. To solve it, we break it into one or more sub-problems of size smaller than $n$ and solve them recursively.
-* Combine the solutions of the sub-problems to solve the original problem.
-* When $n$ is small enough (e.g., $\le 1$ or $\le 10$), the problem can be solved directly (base case).
+- We have a problem of size $n$. To solve it, we break it into one or more sub-problems of size smaller than $n$ and solve them recursively.
+- Combine the solutions of the sub-problems to solve the original problem.
+- When $n$ is small enough (e.g., $\le 1$ or $\le 10$), the problem can be solved directly (base case).
 
 <div class="sectionlecturebox">
 Tiling Puzzle
@@ -25,9 +25,8 @@ Tiling Puzzle
 Consider a $2^n$ by $2^n$ ($n \ge 1$) chessboard with one missing square. The task is to tile this board with L-shaped dominoes (2 by 2 with one square removed) such that no two dominoes overlap and no domino goes out of the board's boundary. See the figure below for an example.
 
 <p align="center">
-  <img src="/dsa/assets/tiling.png" width="400">
+  <img src="/dsa/assets/divide-and-conquer/tiling.png" width="400">
 </p>
-
 
 How do we go about solving this problem? One approach is to start with the simplest case that is 2-by-2. This case is trivial since we can orient the domino to avoid the missing square.
 
@@ -36,7 +35,6 @@ Consider the 4-by-4 case. Pause for a while and think about how you would reduce
 You can divide the board into four quadrants of size 2-by-2. One of these quadrants has a missing square and you know how to tile it. How about the other three? You can put an L-shaped tile in the center such that it overlaps the other three quadrants. Now, you are left with tiling four 2-by-2 quadrants, each of which has one missing square. Thus, we know how to do this for all 4-by-4 cases.
 
 Can you generalize this to 8-by-8, 16-by-16, and so on?
-
 
 <div class="sectionlecturebox">
 Binary Search
@@ -67,12 +65,12 @@ end
 binary_search(A, x, 1, length(A))
 ```
 
-What is the running time? 
+What is the running time?
 
-* We start with a search range of size $n$. The search range shrinks by half after each recursion level.
-* In each recursion level, there is a constant amount of non-recursive work.
-* The search range at recursion level $i$ is $n/2^i$. Solving for $n/2^i = 1$ gives us $i = \log_2 n$.
-* The running time is therefore $(\text{\# recursion levels}) \times (\text{constant work per level}) = O(\log n) \times O(1) = O(\log n)$.
+- We start with a search range of size $n$. The search range shrinks by half after each recursion level.
+- In each recursion level, there is a constant amount of non-recursive work.
+- The search range at recursion level $i$ is $n/2^i$. Solving for $n/2^i = 1$ gives us $i = \log_2 n$.
+- The running time is therefore $(\text{\# recursion levels}) \times (\text{constant work per level}) = O(\log n) \times O(1) = O(\log n)$.
 
 Often, binary search is implemented iteratively as it is simpler.
 
@@ -160,7 +158,7 @@ $$
 T(n) = 2T(n/2) + O(n).
 $$
 
-We will show that $T(n)=O(n \log n)$. In fact, $T(n) = \Theta(n \log n)$ is a tighter statement. 
+We will show that $T(n)=O(n \log n)$. In fact, $T(n) = \Theta(n \log n)$ is a tighter statement.
 
 <div class="sectionlecturebox">
 Solving Recurrences
@@ -214,8 +212,6 @@ $$
 \boxed{O(n \log n)}.
 $$
 
-
-
 **Example 2: The non-recursive work done at each level decreases exponentially.** For example, $T(n) = T(n/10) + T(n/5) + O(n^2)$.
 
 ```
@@ -234,7 +230,6 @@ $$
  n/1000  n/500   n/500   n/250   n/500   n/250   n/250   n/125
                     ...
 ```
-
 
 - **At the 0th level**, the amount of non-recursive work is
 
@@ -258,7 +253,6 @@ c\left(\left(\frac{n}{100}\right)^2 + \left(\frac{n}{50}\right)^2
 = c\left(\frac{1}{400}\right)n^2
 = c\left(\frac{1}{20}\right)^2 n^2.
 $$
-
 
 The non-recursive work done at level $i$ is
 
@@ -287,7 +281,7 @@ $$
 1 + \frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \cdots = 2.
 $$
 
-Intuitively, the running time is dominated by the work done at the top level, since the work done at each level decreases exponentially. 
+Intuitively, the running time is dominated by the work done at the top level, since the work done at each level decreases exponentially.
 
 <b>The missing induction proof</b>. Note that we did not really rigorously prove that the work done at level $i$ is at most $c\left(\frac{1}{20}\right)^i n^2$ (we kind of generalized this fact from the first few levels). This is generally done using induction.
 
@@ -299,7 +293,6 @@ $$
     \sum_{i} c\left(\frac{1}{20}\right) s_i^2 \le c\left(\frac{1}{20}\right) \left(\sum_{i} s_i^2\right) \le c\left(\frac{1}{20}\right) \cdot \left(\frac{1}{20}\right)^i n^2 = c\left(\frac{1}{20}\right)^{i+1} n^2.
 $$
 
-
 **Example 3: The non-recursive work done at each level increases exponentially.** This is a slightly more tricky case, but the rule of thumb is that the work done at the deepest level will dominate the work done by all previous level. For example, consider the following recurrence (which comes up in Strassen's algorithm for matrix multiplication that we will cover later):
 
 $$
@@ -307,7 +300,6 @@ T(n) = 7 T(n/2) + n^2.
 $$
 
 Let us again draw the recursion tree.
-
 
 ```
                                   n
@@ -364,7 +356,6 @@ c \cdot \sum_{i=0}^{\log_2 n} \left(\frac{7}{4}\right)^i c n^2 & = c \cdot \frac
 \end{align*}
 $$
 
-
 Numerically,
 $$
 2 + \log_2\!\left(\frac{7}{4}\right) \approx 2.807,
@@ -376,10 +367,10 @@ $$
 
 Whew!
 
-
 ### Master theorem
 
 For most common recurrences, we can directly apply the Master theorem without going through the recursion tree analysis. The proof of the Master theorem is basically a formalization of the recursion tree analysis.
+
 <div class="lecturebox">
 <b>Master Theorem:</b> If the recurrence is in the following form
 $$
@@ -395,14 +386,13 @@ T(n) = \begin{cases}
 $$
 </div>
 
-
-The proof is a formalization of the above examples. 
+The proof is a formalization of the above examples.
 
 **Exercise:** Solve the some previous recurrence using Master theorem
 
-* Binary search $T(n) = T(n/2)+O(1)$,
-* Merge sort $T(n) = 2T(n/2) +O(n)$,
-* Strassen's algorithm (which we will cover later) $T(n) = 7 T(n/2) + O(n^2)$.
+- Binary search $T(n) = T(n/2)+O(1)$,
+- Merge sort $T(n) = 2T(n/2) +O(n)$,
+- Strassen's algorithm (which we will cover later) $T(n) = 7 T(n/2) + O(n^2)$.
 
 However, Master theorem cannot be used to solve something like this $T(n) = T(n/10) + T(n/5) + O(n^2)$ since it is not in the applicable form. We need to rely on recursion tree in these cases.
 
