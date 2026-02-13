@@ -145,7 +145,7 @@ end
 ```
 
 
-With a random pivot, quickselect runs in $O(n)$ time in expectation. To see this, note that the pivot is equally likely to be any of the $n$ elements. With probability $1/2$, the pivot is between the $n/4$-th and $3n/4$-th smallest elements, which means that both $L$ and $G$ have at most $3n/4$ elements. Thus, in expectation, the recursive call is on an array of size at most $3n/4$, giving the recurrence
+With a random pivot, quickselect runs in $O(n)$ time in expectation. To see this, note that the pivot is equally likely to be any of the $n$ elements. With probability $1/2$, the pivot is between the $n/4$-th and $3n/4$-th smallest elements, which means that both $L$ and $G$ have at most $3n/4$ elements. Thus, in expectation, after every two recursive calls, the size of the array reduces by a factor of $3/4$. In expectation, the running time satisfies the recurrence
 
 $$
 T(n) = T(3n/4) + O(n),
@@ -157,7 +157,7 @@ which solves to $T(n) = O(n)$.
 
 The **median-of-medians** algorithm (also known as BFPRT, after Blum, Floyd, Pratt, Rivest, and Tarjan) selects a pivot that guarantees a good split every time. The algorithm proceeds as follows:
 
-1. **Divide** $A$ into groups of 5. If the number of elements is not a multiple of 5, pad a few $\infty$'s to the last group.
+1. **Divide** $A$ into groups of 5. If the number of elements is not a multiple of 5, pad a few $\infty$'s to the last group (or you can ignore the last group).
 2. **Find the median** of each group (by brute force, since each group has at most 5 elements).
 3. **Recursively find the median** of these $\lceil n/5 \rceil$ medians. Call this $p$.
 4. **Use $p$ as the pivot** to partition $A$ into $L$, $E$, $G$ and recurse as in quickselect.
@@ -166,7 +166,7 @@ The **median-of-medians** algorithm (also known as BFPRT, after Blum, Floyd, Pra
 ### Analysis
 
 <div class="lecturebox">
-<b>Claim:</b> At least $\frac{3n}{10} - 6$ elements are less than $p$, and at least $\frac{3n}{10} - 6$ elements are greater than $p$.
+<b>Claim:</b> At least $\approx \frac{3n}{10}$ elements are less than $p$, and at least $\approx \frac{3n}{10}$ elements are greater than $p$.
 </div>
 
 **Proof sketch.** There are $\lceil n/5 \rceil$ groups, so there are $\lceil n/5 \rceil$ medians. The pivot $p$ is the median of these medians, so at least half of the medians are $\le p$. For each such median, at least 3 out of 5 elements in its group are $\le p$ (the median itself and the two elements smaller than it). This gives at least
@@ -222,16 +222,19 @@ $$
 
 ### Julia Implementation
 
+The following implementation of the median-of-medians algorithm is for pedagogical purposes. In practice, the constants hidden in the $O(n)$ notation are large, so quickselect with a random pivot is often much preferred.
+
 ```julia
 function median_of_medians(A, k)
     n = length(A)
-    if n ≤ 5
+
+    # Base case: sort and return the k-th smallest
+    if n ≤ 10
         return sort(A)[k]
     end
 
     # Step 1-2: Divide into groups of 5 and find each group's median
-    medians = [sort(A[i:min(i+4, n)])[div(min(i+4, n) - i, 2) + 1]
-               for i in 1:5:n]
+    medians = [sort(A[i:i+4])[3] for i in 1:5:n-n%5-4]  
 
     # Step 3: Recursively find the median of medians
     p = median_of_medians(medians, (length(medians) + 1) ÷ 2)
