@@ -8,7 +8,7 @@ permalink: /
 This is my personal archive. It contains notes and code from my teaching, research, and non-academic projects.
 Hope you find it useful!
 
-My academic homepage is [here](https://www.hoavu.org/).
+My research-ish homepage is [here](https://www.hoavu.org/).
 
 
 ## Contents
