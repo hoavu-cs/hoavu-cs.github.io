@@ -322,16 +322,16 @@ By the Master theorem, this leads to $T(n) = O(n^{\log_2 7} ) \approx O(n^{2.81}
 
 ## Julia Implementation
 
-Here is a Julia implementation of Strassen's algorithm for matrix multiplication:
+Here is a Julia implementation of Strassen's algorithm for matrix multiplication. In practice, this algorithm is not preferred due to its large constant factors and numerical instability, and there are better algorithms for sparse matrices. However, it is a beautiful example of how divide-and-conquer can be used to achieve a better asymptotic running time. The topic of fast matrix multiplication is still an active area of research, and the current best algorithm runs in $O(n^{2.3728596})$ time (as of 2024).
 
 ```julia
 """
     Strassen's Matrix Multiplication
     Assumes square matrices of size n x n where n is a power of 2.
     If not, pad with zeros to the next power of 2.
-    This is not very practical due to overhead, but it illustrates the algorithm.
+
 """
-function strassen_multiply(A::AbstractMatrix, B::AbstractMatrix)
+function strassen(A::AbstractMatrix, B::AbstractMatrix)
     n = size(A, 1) 
     # Base case: switch to standard multiplication
     if n <= 32 
@@ -347,13 +347,13 @@ function strassen_multiply(A::AbstractMatrix, B::AbstractMatrix)
     B21, B22 = @view(B[mid+1:end, 1:mid]), @view(B[mid+1:end, mid+1:end])
     
     # Strassen's 7 Products
-    P1 = strassen_multiply(A11, B12 - B22)
-    P2 = strassen_multiply(A11 + A12, B22)
-    P3 = strassen_multiply(A21 + A22, B11)
-    P4 = strassen_multiply(A22, B21 - B11)
-    P5 = strassen_multiply(A11 + A22, B11 + B22)
-    P6 = strassen_multiply(A12 - A22, B21 + B22)
-    P7 = strassen_multiply(A11 - A21, B11 + B12)
+    P1 = strassen(A11, B12 - B22)
+    P2 = strassen(A11 + A12, B22)
+    P3 = strassen(A21 + A22, B11)
+    P4 = strassen(A22, B21 - B11)
+    P5 = strassen(A11 + A22, B11 + B22)
+    P6 = strassen(A12 - A22, B21 + B22)
+    P7 = strassen(A11 - A21, B11 + B12)
     
     # Result quadrants
     C = Matrix{eltype(A)}(undef, n, n)
