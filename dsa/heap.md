@@ -14,7 +14,7 @@ A **heap** is a nearly complete binary tree that satisfies a *heap property*. It
 The Heap Property
 </div>
 
-There are two variants of the heap:
+We often use the terminology of max-heap and min-heap:
 
 - **Max-heap**: every node's key is **greater than or equal to** the keys of its children. The largest element sits at the root.
 - **Min-heap**: every node's key is **less than or equal to** the keys of its children. The smallest element sits at the root.
@@ -27,7 +27,7 @@ There are two variants of the heap:
 <b>Definition (Min-Heap Property)</b>: For every node $i$ other than the root, $A[\text{parent}(i)] \leq A[i]$.
 
 
-The two variants are symmetric—any algorithm for a max-heap has a straightforward min-heap counterpart by flipping all comparisons. We will develop the max-heap and note min-heap differences where relevant.
+The two variants are symmetric: to turn a max-heap into a min-heap, we can either change the comparison direction or negate the keys. 
 
 <div class="sectionlecturebox">
 Array Representation
@@ -44,16 +44,16 @@ $$
 For example, the max-heap $[16, 14, 10, 8, 7, 9, 3, 2, 4, 1]$ corresponds to the tree
 
 ```
-              16
-           /      \
-         14        10
-        /  \      /  \
-       8    7    9    3
-      / \ /
+            16
+           /   \
+         14    10
+        /  \   /  \
+       8    7 9    3
+      / \  /
      2  4 1
 ```
 
-**Key fact:** in a heap of $n$ elements, the leaves are the nodes at positions $\lfloor n/2 \rfloor + 1, \ldots, n$.
+**Key fact:** in a heap of $n$ elements, the leaves are the nodes at positions $\lfloor n/2 \rfloor + 1, \ldots, n$. To see this, a node at index $i$ has no child if $2i > n$, which is equivalent to $i > n/2$. So a node is internal (not a leaf) if and only if $i \le n/2$. Since $i$ is an integer, the last internal node is at index $\lfloor n/2 \rfloor$, and the first leaf is at index $\lfloor n/2 \rfloor + 1$.
 
 <div class="sectionlecturebox">
 Maintaining the Heap Property: <code>heapify</code>
@@ -62,21 +62,22 @@ Maintaining the Heap Property: <code>heapify</code>
 `heapify` is the core subroutine. It assumes that the subtrees rooted at `left(i)` and `right(i)` are already valid max-heaps, and fixes a possible violation at node `i` by "floating" `A[i]` down the tree.
 
 ```julia
-function heapify!(A, i, heap_size)
-    l = 2i          # left child
-    r = 2i + 1      # right child
+function heapify!(A, i)
+    n = length(A)
+    l = 2i
+    r = 2i + 1
     largest = i
 
-    if l <= heap_size && A[l] > A[largest]
+    if l <= n && A[l] > A[largest]
         largest = l
     end
-    if r <= heap_size && A[r] > A[largest]
+    if r <= n && A[r] > A[largest]
         largest = r
     end
 
     if largest != i
         A[i], A[largest] = A[largest], A[i]   # swap
-        heapify!(A, largest, heap_size)        # recurse on affected subtree
+        heapify!(A, largest)                   # recurse on affected subtree
     end
 end
 ```
@@ -88,13 +89,12 @@ end
 Building a Heap: <code>build_heap</code>
 </div>
 
-Given an arbitrary array $A[1:n]$, we can turn it into a max-heap in $O(n)$ time by calling `heapify` bottom-up on every internal node (leaves already satisfy the property trivially).
+Given an arbitrary array $A[1:n]$, we can turn it into a max-heap in $O(n)$ time by calling `heapify` bottom-up on every internal node (leaves already satisfy the property trivially). Since the last internal node is at index $\lfloor n/2 \rfloor$, we call `heapify` on nodes $\lfloor n/2 \rfloor, \lfloor n/2 \rfloor - 1, \ldots, 1$.
 
 ```julia
 function build_heap!(A)
-    n = length(A)
-    for i in div(n, 2):-1:1
-        heapify!(A, i, n)
+    for i in div(length(A), 2):-1:1
+        heapify!(A, i)
     end
 end
 ```
@@ -114,19 +114,19 @@ Heap Operations
 
 All operations below assume a max-heap. For a min-heap, flip the comparisons.
 
-**Extract-max** removes and returns the maximum element (the root). After we remove the root, we would need to fix the heap by putting the rightmost leaf there and bubbling it downward.
+**Extract-max** removes and returns the maximum element (the root). After we remove the root, we move the last element to the root, shrink the array with `pop!`, and call `heapify` to restore the heap property.
 
 ```julia
-function heap_extract_max!(A, heap_size)
+function heap_extract_max!(A)
     max_val = A[1]
-    A[1] = A[heap_size]         # move last element to root
-    heap_size -= 1
-    heapify!(A, 1, heap_size)   # restore heap property
-    return max_val, heap_size
+    A[1] = A[end]               # move last element to root
+    pop!(A)                     # shrink the array
+    heapify!(A, 1)              # restore heap property
+    return max_val
 end
 ```
 
-Running time: $O(\log n)$.
+Running time: $O(\log n)$ since `heapify` is called once.
 
 ---
 
@@ -139,7 +139,7 @@ function heap_increase_key!(A, i, key)
     end
     A[i] = key
     while i > 1 && A[div(i, 2)] < A[i]
-        A[i], A[div(i, 2)] = A[div(i, 2)], A[i]
+        A[i], A[div(i, 2)] = A[div(i, 2)], A[i] # Swap A[i] with its parent if A[i] is larger
         i = div(i, 2)
     end
 end
@@ -149,29 +149,17 @@ Running time: $O(\log n)$ since the node travels at most $O(\log n)$ levels upwa
 
 ---
 
-**Insert** adds a new key to the heap.
+**Insert** adds a new key to the heap. We simply append a sentinel value $-\infty$ to the end of the array and call `increase-key` to set the correct value and restore the heap property.
 
 ```julia
-function max_heap_insert!(A, key, heap_size)
+function max_heap_insert!(A, key)
     push!(A, -Inf)              # extend array with sentinel
-    heap_size += 1
-    heap_increase_key!(A, heap_size, key)
+    heap_increase_key!(A, length(A), key)
 end
 ```
 
-Running time: $O(\log n)$.
+Running time: $O(\log n)$ because `increase-key` is called once.
 
-<div class="lecturebox">
-<b>Summary of running times</b> for a heap of $n$ elements:
-
-| Operation | Time |
-|---|---|
-| <code>build_heap</code> | $O(n)$ |
-| <code>extract_max</code> / <code>extract_min</code> | $O(\log n)$ |
-| <code>insert</code> | $O(\log n)$ |
-| <code>increase_key</code> / <code>decrease_key</code> | $O(\log n)$ |
-| <code>peek_max</code> / <code>peek_min</code> (read root) | $O(1)$ |
-</div>
 
 <div class="sectionlecturebox">
 Heapsort
@@ -182,11 +170,9 @@ Heapsort sorts an array in $O(n \log n)$ time. The idea: build a max-heap, then 
 ```julia
 function heapsort(A)
     build_heap!(A)
-    heap_size = length(A)
     sorted = []
-    while heap_size > 0
-        max_val, heap_size = heap_extract_max!(A, heap_size)
-        push!(sorted, max_val)
+    while !isempty(A)
+        push!(sorted, heap_extract_max!(A))
     end
     return sorted   # sorted in decreasing order
 end
