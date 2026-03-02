@@ -63,8 +63,10 @@ Notice how `fib(3)` is computed twice, `fib(2)` is computed three times, and so 
 We try to avoid repeated computation by checking if the computation has been done before.
 
 ```julia
+using OffsetArrays
+
 function compute_fibonacci(n)
-    F = fill(nothing, n + 1)  # F[1] stores F_0, ..., F[n+1] stores F_n
+    F = OffsetArray(fill(nothing, n + 1), 0:n)
 
     function fib(i)
         if i == 0
@@ -72,14 +74,14 @@ function compute_fibonacci(n)
         elseif i == 1
             return 1
         else
-            if isnothing(F[i])      # F[i-1] not yet computed
+            if isnothing(F[i - 1])
                 fib(i - 1)
             end
-            if isnothing(F[i - 1])  # F[i-2] not yet computed
+            if isnothing(F[i - 2])
                 fib(i - 2)
             end
-            F[i + 1] = F[i] + F[i - 1]
-            return F[i + 1]
+            F[i] = F[i - 1] + F[i - 2]
+            return F[i]
         end
     end
 
@@ -93,13 +95,13 @@ We can also fill the array $F$ bottom up deliberately.
 
 ```julia
 function fibonacci_bottom_up(n)
-    F = zeros(Int, n + 1)  
-    F[1] = 0  
-    F[2] = 1  
+    F = OffsetArray(zeros(Int, n + 1), 0:n)
+    F[0] = 0
+    F[1] = 1
     for i in 2:n
-        F[i + 1] = F[i] + F[i - 1]
+        F[i] = F[i - 1] + F[i - 2]
     end
-    return F[n + 1]
+    return F[n]
 end
 ```
 
@@ -237,7 +239,7 @@ function lis(A)
 end
 ```
 
-The running time is $O(n^2)$.
+It is easy to see that the running time is $O(n^2)$.
 
 <div class="sectionlecturebox">
 Edit Distance
@@ -299,29 +301,29 @@ Base case: $ED[i, 0] = i$ and $ED[0, j] = j$ (Why?).
 ```julia
 function edit_distance(A::String, B::String)
     n, m = length(A), length(B)
-    ED = zeros(Int, n + 1, m + 1)
+    ED = OffsetArray(zeros(Int, n + 1, m + 1), 0:n, 0:m)
 
     # Base cases
     for i in 0:n
-        ED[i + 1, 1] = i
+        ED[i, 0] = i
     end
     for j in 0:m
-        ED[1, j + 1] = j
+        ED[0, j] = j
     end
 
     # Fill the table
     for i in 1:n
         for j in 1:m
             diff = A[i] == B[j] ? 0 : 1
-            ED[i + 1, j + 1] = min(
-                ED[i, j + 1] + 1,      # delete A[i]
-                ED[i + 1, j] + 1,      # insert B[j]
-                ED[i, j] + diff         # substitute
+            ED[i, j] = min(
+                ED[i - 1, j] + 1,       # delete A[i]
+                ED[i, j - 1] + 1,       # insert B[j]
+                ED[i - 1, j - 1] + diff  # substitute
             )
         end
     end
 
-    return ED[n + 1, m + 1]
+    return ED[n, m]
 end
 ```
 
