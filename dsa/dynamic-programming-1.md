@@ -68,11 +68,12 @@ using OffsetArrays
 function compute_fibonacci(n)
     F = OffsetArray(fill(nothing, n + 1), 0:n)
 
+    F[0] = 0
+    F[1] = 1
+
     function fib(i)
-        if i == 0
-            return 0
-        elseif i == 1
-            return 1
+        if i == 0 || i == 1
+            return F[i]
         else
             if isnothing(F[i - 1])
                 fib(i - 1)
@@ -204,7 +205,7 @@ Given an array $A[1 \ldots n]$, what is the longest increasing subsequence (LIS)
 
 **Motivation**: This is one way to measure how sorted a database is. If the length of the LIS is close to $n$, then $A$ is nearly sorted.
 
-Let us create a graph where node $i$ corresponds to $A[i]$. If $A[j] \le A[i]$ and $j \le i$, then create an edge $j \to i$ with length 1. Otherwise, $W(j, i) = \emptyset$. Note that this graph is also directed acyclic.
+Let us create a graph where node $i$ corresponds to $A[i]$. If $A[j] \le A[i]$ and $j < i$, then create an edge $j \to i$ with length 1. Otherwise, $W(j, i) = \emptyset$. Note that this graph is also directed acyclic.
 
 Clearly, an increasing subsequence corresponds to a directed path. Hence, the goal is to find the longest directed path in the graph we created.
 
