@@ -1,12 +1,12 @@
 ---
-title: Dynamic Programming Part 2 (LCS, Knapsack)
+title: Dynamic Programming Part 2 (LCS, Knapsack, Weighted Interval Scheduling)
 parent: DSA
 nav_order: 6
 layout: default
 permalink: /dsa/dynamic-programming-2/
 ---
 
-# Dynamic Programming Part 2 (LCS, Knapsack)
+# Dynamic Programming Part 2 (LCS, Knapsack, Weighted Interval Scheduling)
 
 <div class="sectionlecturebox">
 Longest Common Subsequence
@@ -262,3 +262,103 @@ end
 **Exercise:** Modify the implementation to also return which items are selected, similar to the traceback in the value-based version.
 
 **Exercise:** In both knapsack variants, each item is taken at most once (0/1 knapsack). If items can be taken multiple times, how would the recurrence change? (This is called the **unbounded knapsack** problem.)
+
+<div class="sectionlecturebox">
+Weighted Interval Scheduling
+</div>
+
+You are given $n$ jobs. Job $i$ has a start time $s[i]$, a finish time $f[i]$, and a weight $v[i] > 0$. Two jobs are **compatible** if they do not overlap. That is one must finish before the other starts (here, we assume that if one job finishes at time $t$ and another job starts at time $t$, they are compatible but this can easily be modified). The goal is to select a subset of mutually compatible jobs that maximizes total weight.
+
+**Example:** Suppose we have 5 jobs:
+
+| Job | Start | Finish | Weight |
+|-----|-------|--------|--------|
+| 1   | 1     | 3      | 2      |
+| 2   | 2     | 5      | 4      |
+| 3   | 4     | 6      | 3      |
+| 4   | 6     | 8      | 5      |
+| 5   | 1     | 8      | 7      |
+
+Jobs 1, 3, and 4 are mutually compatible (total weight $2 + 3 + 5 = 10$), while job 5 conflicts with all other jobs (total weight 7). The optimal solution is $\{1, 3, 4\}$ with total weight 10.
+
+### Preprocessing
+
+Sort all jobs by finish time: $f[1] \le f[2] \le \cdots \le f[n]$.
+
+For each job $i$, define $p[i]$ as the index of the latest job that finishes before job $i$ starts (i.e., the largest $j < i$ such that $f[j] \le s[i]$). If no such job exists, set $p[i] = 0$. This can be computed in $O(n \log n)$ using binary search after sorting.
+
+### DP Formulation
+
+Define:
+
+$$
+dp[i] = \text{maximum weight achievable using only jobs } 1 \ldots i.
+$$
+
+For job $i$, there are two choices:
+
+- **Skip job $i$:** The best solution among the first $i$ jobs is the same as among the first $i-1$ jobs, giving $dp[i-1]$.
+- **Take job $i$:** Job $i$ contributes weight $v[i]$, and we can only use jobs compatible with $i$. The latest compatible job has index $p[i]$, so the remaining value is $dp[p[i]]$.
+
+This gives the recurrence:
+
+$$
+dp[i] = \max\bigl(dp[i-1],\ v[i] + dp[p[i]]\bigr)
+$$
+
+**Base case:** $dp[0] = 0$ (no jobs, no weight).
+
+**Filling order:** Fill $dp[1], dp[2], \ldots, dp[n]$ in order. Each entry depends on earlier entries so this is straightforward.
+
+The final answer is $dp[n]$. The running time is $O(n \log n)$ (dominated by sorting and binary searches to compute $p[i]$).
+
+To reconstruct the selected jobs, trace back: at index $i$, if $v[i] + dp[p[i]] > dp[i-1]$, then job $i$ was taken and we recurse on $p[i]$; otherwise job $i$ was skipped and we recurse on $i-1$.
+
+### Julia Implementation
+
+```julia
+function weighted_interval_scheduling(starts, finishes, weights)
+    n = length(starts)
+
+    # Sort jobs by finish time
+    order = sortperm(finishes)
+    s = starts[order]
+    f = finishes[order]
+    v = weights[order]
+
+    # Compute p[i]: latest job j < i with f[j] <= s[i], using binary search
+    p = zeros(Int, n)
+    for i in 1:n
+        lo, hi = 1, i - 1
+        while lo <= hi
+            mid = (lo + hi) ÷ 2
+            if f[mid] <= s[i]
+                p[i] = mid
+                lo = mid + 1
+            else
+                hi = mid - 1
+            end
+        end
+    end
+
+    # Fill DP table
+    dp = OffsetArrays.OffsetArray(zeros(Int, n + 1), 0:n)
+    for i in 1:n
+        dp[i] = max(dp[i - 1], v[i] + dp[p[i]])
+    end
+
+    # Reconstruct selected jobs
+    selected = Int[]
+    i = n
+    while i >= 1
+        if v[i] + dp[p[i]] > dp[i - 1]
+            push!(selected, order[i])
+            i = p[i]
+        else
+            i -= 1
+        end
+    end
+
+    return dp[n], sort(selected)
+end
+```
