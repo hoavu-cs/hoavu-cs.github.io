@@ -64,9 +64,11 @@ We want to compute these **strongly connected components** of a directed graph.
 
 ---
 
+Recall that a directed acyclic graph (DAG) is a directed graph with no directed cycles.
+
 **Observation 1**: If we contract each SCC into a single vertex, the resulting **contracted graph** is a DAG.
 
-**Proof:** Suppose for contradiction the contracted has a directed cycle $X_1 \to X_2 \to \cdots \to X_k \to X_1$. Then every vertex in $X_1$ can reach every vertex in $X_k$ (through $X_2, \ldots, X_{k-1}$), and vice versa. This makes $X_1 \cup \cdots \cup X_k$ strongly connected, contradicting the maximality of each $X_i$ as an SCC.
+**Proof:** Suppose for contradiction the contracted graph has a directed cycle $X_1 \to X_2 \to \cdots \to X_k \to X_1$. Then every vertex in $X_1$ can reach every vertex in $X_k$ (through $X_2, \ldots, X_{k-1}$), and vice versa. This makes $X_1 \cup \cdots \cup X_k$ strongly connected, contradicting the maximality of each $X_i$ as an SCC.
 
 The contracted graph of the example above is:
 
@@ -167,7 +169,7 @@ If we run DFS on the above graph starting from vertex $1$ and at each step explo
 
 ---
 
-This suggests that the vertex with the largest post number in a DFS of the original graph must lie in a source SCC of the contracted DAG. However, what we want is a vertex in a **sink** SCC of the contracted DAG which comes the third key observation.
+This suggests that the vertex with the largest post number in a DFS of the original graph must lie in a source SCC of the contracted DAG. However, what we want is a vertex in a **sink** SCC of the contracted DAG. This is the third key observation.
 
 
 
@@ -309,7 +311,7 @@ This suggests the following algorithm:
 \end{tikzpicture}
 </script>
 
-The algorithm involves two DFSs and constructing $G^T$ all of which take $O(V+E)$ time, so the overall time complexity of finding all strongly connected components is $O(V+E)$.
+The algorithm involves two DFSs and constructing $G^T$, all of which take $O(V+E)$ time, so the overall time complexity of finding all strongly connected components is $O(V+E)$.
 
 ---
 

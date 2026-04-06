@@ -178,7 +178,8 @@ visited = falses(n)
 function visit(adj, s)
     visited[s] = true # mark s as visited
     # iterate over neighbors of s and visit unvisited neighbors
-    for (v, _) in adj[s] 
+    for neighbor in adj[s]
+        v = if istuple(neighbor) then neighbor[1] else neighbor
         if !visited[v]
             visit(adj, v)
         end
