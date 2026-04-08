@@ -1,12 +1,12 @@
 ---
-title: Breadth-First Search (BFS) and Dijkstra's Algorithm
+title: Breadth-First Search (BFS)
 parent: DSA
 nav_order: 12
 layout: default
-permalink: /dsa/bfs-dijkstra/
+permalink: /dsa/bfs/
 ---
 
-# Breadth-First Search (BFS) and Dijkstra's Algorithm
+# Breadth-First Search (BFS)
 
 **Breadth-First Search (BFS)** is a graph traversal algorithm that explores vertices level by level, starting from a source vertex. It visits all vertices at distance $d$ before visiting any vertex at distance $d+1$.
 
@@ -342,8 +342,12 @@ function reconstruct_path(parent, source, target)
 end
 ```
 ---
+
+### Correctness
+
+We can sketch the correctness of BFS using the following induction hypothesis. There is a point where only vertices at distance $k$ are in the queue furthermore the shortest path from the source to any vertex at distance $k$ has already been correctly computed. When we dequeue these vertices, vertices at distance $k+1$ will be discovered and enqueued, and the shortest path to them will be correctly computed as well.
+
+---
 ### Running Time of BFS
 
 Note that we push each vertex to the queue at most once when it is first discovered in BFS then it is marked as visited and never enqueued again. When we push a vertex to the queue, we process each of its outgoing edges to discover its neighbors and enqueue any that have not yet been visited. Hence, each edge is processed twice (in undirected graphs) or once (in directed graphs). The running time of BFS is therefore $O(V + E)$.
-
----
