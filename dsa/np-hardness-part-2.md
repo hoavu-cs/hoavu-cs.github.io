@@ -33,22 +33,22 @@ The diagram below shows how the complexity classes relate (assuming $\mathbf{P} 
 <p align="center">
 <script type="text/tikz">
 \begin{tikzpicture}[thick]
-  % Step 1: fill NP-Hard with orange
+  % Fill NP-Hard region
   \fill[orange!25] (2.5, 0) ellipse (3.8 and 2.6);
 
-  % Step 2: fill NP with blue
+  % Fill NP region
   \fill[blue!20] (-0.5, 0) ellipse (3.2 and 2.1);
 
-  % Step 3: fill intersection (NP-Complete) with a distinct third color
+  % Fill intersection (NP-Complete) by clipping NP and filling NP-Hard color
   \begin{scope}
     \clip (-0.5, 0) ellipse (3.2 and 2.1);
     \fill[violet!30] (2.5, 0) ellipse (3.8 and 2.6);
   \end{scope}
 
-  % Step 4: fill P inside NP
+  % Fill P inside NP
   \fill[green!30] (-2.2, 0) ellipse (0.9 and 0.7);
 
-  % Draw outlines on top
+  % Outlines
   \draw (2.5, 0) ellipse (3.8 and 2.6);
   \draw (-0.5, 0) ellipse (3.2 and 2.1);
   \draw (-2.2, 0) ellipse (0.9 and 0.7);
@@ -130,93 +130,47 @@ The construction runs in polynomial time: $3k$ vertices and at most $\binom{3k}{
 **Example.** Let $\phi = (x_1 \lor x_2 \lor \neg x_3) \land (\neg x_1 \lor x_2 \lor x_3) \land (x_1 \lor \neg x_2 \lor x_3)$ with $k = 3$. The graph $G$ has three triangles (one per clause) and six conflict edges (dashed) connecting complementary literals across triangles. The assignment $x_1 = x_2 = x_3 = \mathrm{T}$ satisfies all three clauses; picking one true literal per clause gives the independent set $\{x_1,\, x_2,\, x_3\}$ highlighted in yellow.
 
 <script type="text/tikz">
-\begin{tikzpicture}[thick, font=\small]
-  % Coordinates
-  % Clause 1: (x1, x2, \neg x3)
-  \coordinate (c1a) at (0, 2);
-  \coordinate (c1b) at (0, 0);
-  \coordinate (c1c) at (0, -2);
+\begin{tikzpicture}[thick,
+    lit/.style={circle, draw, minimum size=12mm, inner sep=1pt, font=\small\sffamily},
+    hi/.style={circle, draw, minimum size=12mm, inner sep=1pt, font=\small\sffamily, fill=yellow!50},
+    lbl/.style={draw=none, fill=none, font=\small\sffamily}]
 
-  % Clause 2: (\neg x1, x2, x3)
-  \coordinate (c2a) at (4, 2.5);
-  \coordinate (c2b) at (4, 0.5);
-  \coordinate (c2c) at (4, -1.5);
+  % === C1 (bottom-left): x1 apex, x2 base-left, neg_x3 base-right ===
+  \node[hi]  (x1a)  at (0,   1.3) {$x_1$};
+  \node[lit] (x2a)  at (-1,  0)   {$x_2$};
+  \node[lit] (nx3a) at (1,   0)   {$\neg x_3$};
+  \draw (x1a) -- (x2a) -- (nx3a) -- (x1a);
+  \node[lbl] at (0, -0.8) {$C_1$};
 
-  % Clause 3: (x1, \neg x2, x3)
-  \coordinate (c3a) at (8, 2);
-  \coordinate (c3b) at (8, 0);
-  \coordinate (c3c) at (8, -2);
+  % === C2 (top-center): neg_x1 apex, x2 base-left, x3 base-right ===
+  \node[lit] (nx1b) at (4,   4.3) {$\neg x_1$};
+  \node[hi]  (x2b)  at (3,   3)   {$x_2$};
+  \node[lit] (x3b)  at (5,   3)   {$x_3$};
+  \draw (nx1b) -- (x2b) -- (x3b) -- (nx1b);
+  \node[lbl] at (4, 2.2) {$C_2$};
 
-  % Triangle edges
-  \draw (c1a) -- (c1b) -- (c1c) -- cycle;
-  \draw (c2a) -- (c2b) -- (c2c) -- cycle;
-  \draw (c3a) -- (c3b) -- (c3c) -- cycle;
+  % === C3 (bottom-right): x1 apex, neg_x2 base-left, x3 base-right ===
+  \node[lit] (x1c)  at (8,   1.3) {$x_1$};
+  \node[lit] (nx2c) at (7,   0)   {$\neg x_2$};
+  \node[hi]  (x3c)  at (9,   0)   {$x_3$};
+  \draw (x1c) -- (nx2c) -- (x3c) -- (x1c);
+  \node[lbl] at (8, -0.8) {$C_3$};
 
-  % Conflict edges (all 6)
-  \draw[dashed, red] (c1a) -- (c2a); % x1 -- \neg x1
-  \draw[dashed, red] (c3a) -- (c2a); % x1 -- \neg x1
+  % === Conflict edges (dashed) ===
+  % x1 (C1) <-> neg_x1 (C2): bend left
+  \draw[dashed, gray] (x1a)  to[bend left=15] (nx1b);
+  % x1 (C3) <-> neg_x1 (C2): bend right
+  \draw[dashed, gray] (x1c)  to[bend right=15] (nx1b);
+  % x3 (C2) <-> neg_x3 (C1): diagonal down-left
+  \draw[dashed, gray] (x3b)  to[bend right=15] (nx3a);
+  % x2 (C2) <-> neg_x2 (C3): bend right more
+  \draw[dashed, gray] (x2b)  to[bend right=25] (nx2c);
+  % x2 (C1) <-> neg_x2 (C3): long, arc below, more
+  \draw[dashed, gray] (x2a)  to[bend right=30] (nx2c);
+  % neg_x3 (C1) <-> x3 (C3): long, arc below (deeper)
+  \draw[dashed, gray] (nx3a) to[bend right=28] (x3c);
 
-  \draw[dashed, red] (c1b) -- (c3b); % x2 -- \neg x2
-  \draw[dashed, red] (c2b) -- (c3b); % x2 -- \neg x2
-
-  \draw[dashed, red] (c1c) -- (c2c); % \neg x3 -- x3
-  \draw[dashed, red] (c1c) -- (c3c); % \neg x3 -- x3
-
-  % Clause labels
-  \node[font=\footnotesize\sffamily] at (-1.3, 0) {$C_1$};
-  \node[font=\footnotesize\sffamily] at (4, 4) {$C_2$};
-  \node[font=\footnotesize\sffamily] at (9.3, 0) {$C_3$};
-
-  % Highlighted independent set: {v_{1,1}, v_{2,2}, v_{3,3}}
-
-  % Clause 1
-  \node[fill=yellow!40, circle, inner sep=1.8pt] at (c1a) {};
-  \node[left] at (c1a) {$v_{1,1}$};
-  \node[left] at ($ (c1a) + (-0.35, 0.3) $) {$x_1$};
-
-  \node[circle, fill=black, inner sep=1.2pt] at (c1b) {};
-  \node[left] at (c1b) {$v_{1,2}$};
-  \node[left] at ($ (c1b) + (-0.35, -0.1) $) {$x_2$};
-
-  \node[circle, fill=black, inner sep=1.2pt] at (c1c) {};
-  \node[left] at (c1c) {$v_{1,3}$};
-  \node[left] at ($ (c1c) + (-0.35, 0.3) $) {$\neg x_3$};
-
-  % Clause 2
-  \node[circle, fill=black, inner sep=1.2pt] at (c2a) {};
-  \node[right] at (c2a) {$v_{2,1}$};
-  \node[right] at ($ (c2a) + (0.35, 0.3) $) {$\neg x_1$};
-
-  \node[fill=yellow!40, circle, inner sep=1.8pt] at (c2b) {};
-  \node[right] at (c2b) {$v_{2,2}$};
-  \node[right] at ($ (c2b) + (0.35, -0.1) $) {$x_2$};
-
-  \node[circle, fill=black, inner sep=1.2pt] at (c2c) {};
-  \node[right] at (c2c) {$v_{2,3}$};
-  \node[right] at ($ (c2c) + (0.35, 0.3) $) {$x_3$};
-
-  % Clause 3
-  \node[circle, fill=black, inner sep=1.2pt] at (c3a) {};
-  \node[right] at (c3a) {$v_{3,1}$};
-  \node[right] at ($ (c3a) + (0.35, 0.3) $) {$x_1$};
-
-  \node[circle, fill=black, inner sep=1.2pt] at (c3b) {};
-  \node[right] at (c3b) {$v_{3,2}$};
-  \node[right] at ($ (c3b) + (0.35, -0.1) $) {$\neg x_2$};
-
-  \node[fill=yellow!40, circle, inner sep=1.8pt] at (c3c) {};
-  \node[right] at (c3c) {$v_{3,3}$};
-  \node[right] at ($ (c3c) + (0.35, 0.3) $) {$x_3$};
-
-  % Legend
-  \node[font=\footnotesize\itshape] at (4, -3.5)
-    {Independent set: $\{v_{1,1},\,v_{2,2},\,v_{3,3}\}$};
-
-  \draw[fill=yellow!40] (1.6, -4.3) rectangle (2.1, -4.8);
-  \node[right] at (2.15, -4.55) {independent set};
-
-  \draw[dashed, red] (5.2, -4.55) -- (5.8, -4.55);
-  \node[right] at (5.85, -4.55) {conflict edge};
+  \node[lbl] at (4, -1.9) {Solid: clause gadget \quad Dashed: conflict};
 \end{tikzpicture}
 </script>
 
@@ -230,3 +184,64 @@ $(\Rightarrow)$ Suppose $\phi$ has a satisfying assignment $\sigma$. For each cl
 So $S$ is an independent set of size $k$.
 
 $(\Leftarrow)$ Suppose $G$ has an independent set $S$ with $\lvert S \rvert = k$. Each triangle is a clique of size 3, so $S$ contains at most one vertex per triangle. Since $\lvert S \rvert = k$ and there are $k$ triangles, $S$ has exactly one vertex per triangle. Define an assignment $\sigma$ by setting each literal in $S$ to true. This is well-defined: if $S$ contained $v_{i,a}$ labeled $x_r$ and $v_{j,b}$ labeled $\neg x_r$, the conflict edge between them would contradict $S$ being independent. For variables unconstrained by $S$, set them arbitrarily. Every clause $C_i$ is satisfied because the vertex chosen from triangle $i$ corresponds to a true literal in $C_i$. $\square$
+
+<div class="sectionlecturebox">
+Reduction: 3-SAT reduces to ILP
+</div>
+
+An **integer linear program (ILP)** is a system of linear inequalities with integer-valued variables. The **ILP Feasibility** decision problem asks: given coefficients $c_{ji}$ and right-hand sides $d_j$, does there exist an integer assignment $y_1, \ldots, y_n \in \{0, 1\}$ satisfying
+
+$$\sum_{i=1}^{n} c_{ji}\, y_i \;\ge\; d_j \quad \text{for all } j?$$
+
+**Theorem.** ILP Feasibility is NP-complete.
+
+**Proof.**
+
+*Step 1: ILP is in NP.* A certificate is an assignment $y \in \{0,1\}^n$. Checking each constraint takes $O(n)$ time, so verification is polynomial.
+
+*Step 2: 3-SAT $\le_p$ ILP.* We describe a polynomial-time reduction.
+
+**Construction.** Given a 3-CNF formula $\phi$ with clauses $C_1, \ldots, C_m$ over variables $x_1, \ldots, x_n$:
+
+- **Variables:** Introduce a binary variable $y_i \in \{0,1\}$ for each $x_i$, where $y_i = 1$ encodes $x_i = \mathrm{T}$ and $y_i = 0$ encodes $x_i = \mathrm{F}$.
+
+- **Clause constraints:** For each clause $C_j$, let $P_j$ be the set of indices of positive literals and $N_j$ the set of indices of negated literals. The clause is satisfied iff at least one literal is true, i.e., $\sum_{i \in P_j} y_i + \sum_{i \in N_j}(1 - y_i) \ge 1$. Rearranging:
+
+$$\sum_{i \in P_j} y_i \;-\; \sum_{i \in N_j} y_i \;\ge\; 1 - \lvert N_j \rvert.$$
+
+- **Bound constraints:** $0 \le y_i \le 1$ for each $i$.
+
+The ILP has $n$ variables, $m + 2n$ constraints, all constructible in polynomial time.
+
+**Example (satisfiable).** For $\phi = (x_1 \lor x_2 \lor \neg x_3) \land (\neg x_1 \lor x_2 \lor x_3) \land (x_1 \lor \neg x_2 \lor x_3)$:
+
+$$\begin{aligned}
+y_1 + y_2 - y_3 &\;\ge\; 0 & (C_1{:}\ P=\{1,2\},\ N=\{3\})\\
+-y_1 + y_2 + y_3 &\;\ge\; 0 & (C_2{:}\ P=\{2,3\},\ N=\{1\})\\
+y_1 - y_2 + y_3 &\;\ge\; 0 & (C_3{:}\ P=\{1,3\},\ N=\{2\})\\
+y_i &\;\in\; \{0,1\}, & i = 1,2,3.
+\end{aligned}$$
+
+The assignment $y_1 = y_2 = y_3 = 1$ satisfies all three constraints: $1+1-1 = 1 \ge 0$, $-1+1+1 = 1 \ge 0$, $1-1+1 = 1 \ge 0$.
+
+**Example (unsatisfiable).** For $\phi = (x_1 \lor x_2 \lor x_3) \land (\neg x_1 \lor \neg x_2 \lor \neg x_3) \land (\neg x_1 \lor \neg x_2 \lor x_3) \land (x_1 \lor \neg x_2 \lor \neg x_3) \land (\neg x_1 \lor x_2 \lor \neg x_3) \land (x_1 \lor x_2 \lor \neg x_3) \land (x_1 \lor \neg x_2 \lor x_3) \land (\neg x_1 \lor x_2 \lor x_3)$, which contains all $2^3 = 8$ possible sign patterns over three variables and is therefore unsatisfiable. The ILP becomes:
+
+$$\begin{aligned}
+y_1 + y_2 + y_3 &\;\ge\; 1\\
+-y_1 - y_2 - y_3 &\;\ge\; -2\\
+-y_1 - y_2 + y_3 &\;\ge\; -1\\
+y_1 - y_2 - y_3 &\;\ge\; -1\\
+-y_1 + y_2 - y_3 &\;\ge\; -1\\
+y_1 + y_2 - y_3 &\;\ge\; 0\\
+y_1 - y_2 + y_3 &\;\ge\; 0\\
+-y_1 + y_2 + y_3 &\;\ge\; 0\\
+y_i &\;\in\; \{0,1\}, \quad i = 1,2,3.
+\end{aligned}$$
+
+No assignment $y \in \{0,1\}^3$ satisfies all eight constraints simultaneously. For instance, $y_1=y_2=y_3=1$ fails constraint 2 ($-3 \not\ge -2$), and $y_1=y_2=y_3=0$ fails constraint 1 ($0 \not\ge 1$). One can verify all eight assignments and find that each violates at least one constraint, confirming infeasibility.
+
+**Correctness:** We prove $\phi$ is satisfiable $\iff$ the ILP has a feasible solution.
+
+$(\Rightarrow)$ Let $\sigma$ be a satisfying assignment. Set $y_i = 1$ if $\sigma(x_i) = \mathrm{T}$, else $y_i = 0$. Each clause $C_j$ has at least one true literal: a true positive literal $x_i$ contributes $+1$ via $y_i = 1$, and a true negative literal $\neg x_i$ contributes $+1$ via $(1 - y_i) = 1$. So $\sum_{i \in P_j} y_i + \sum_{i \in N_j}(1 - y_i) \ge 1$ holds for every $j$.
+
+$(\Leftarrow)$ Let $y \in \{0,1\}^n$ be a feasible ILP solution. Set $\sigma(x_i) = \mathrm{T}$ iff $y_i = 1$. For each clause $C_j$, the constraint gives $\sum_{i \in P_j} y_i + \sum_{i \in N_j}(1 - y_i) \ge 1$, so at least one literal in $C_j$ is true under $\sigma$. $\square$
