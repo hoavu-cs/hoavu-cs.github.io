@@ -189,7 +189,7 @@ $(\Leftarrow)$ Suppose $G$ has an independent set $S$ with $\lvert S \rvert = k$
 Reduction: 3-SAT reduces to ILP
 </div>
 
-An **integer linear program (ILP)** is a system of linear inequalities with integer-valued variables. The **ILP Feasibility** decision problem asks: given coefficients $c_{ji}$ and right-hand sides $d_j$, does there exist an integer assignment $y_1, \ldots, y_n \in \{0, 1\}$ satisfying
+An **integer linear program (ILP)** is a system of linear inequalities with integer-valued variables. The **ILP Feasibility** decision problem asks: given coefficients $c_{ji}$ and right-hand sides $d_j$, does there exist integers $y_1, \ldots, y_n$ satisfying
 
 $$\sum_{i=1}^{n} c_{ji}\, y_i \;\ge\; d_j \quad \text{for all } j?$$
 
@@ -197,51 +197,45 @@ $$\sum_{i=1}^{n} c_{ji}\, y_i \;\ge\; d_j \quad \text{for all } j?$$
 
 **Proof.**
 
-*Step 1: ILP is in NP.* A certificate is an assignment $y \in \{0,1\}^n$. Checking each constraint takes $O(n)$ time, so verification is polynomial.
+*Step 1: ILP is in NP.* A certificate is an integer assignment $y \in \mathbb{Z}^n$. Checking each constraint takes $O(n)$ time, so verification is polynomial.
 
 *Step 2: 3-SAT $\le_p$ ILP.* We describe a polynomial-time reduction.
 
 **Construction.** Given a 3-CNF formula $\phi$ with clauses $C_1, \ldots, C_m$ over variables $x_1, \ldots, x_n$:
 
-- **Variables:** Introduce a binary variable $y_i \in \{0,1\}$ for each $x_i$, where $y_i = 1$ encodes $x_i = \mathrm{T}$ and $y_i = 0$ encodes $x_i = \mathrm{F}$.
+- **Variables:** Introduce an integer variable $y_i \in \mathbb{Z}$ for each $x_i$, where $y_i = 1$ encodes $x_i = \mathrm{T}$ and $y_i = 0$ encodes $x_i = \mathrm{F}$.
 
-- **Clause constraints:** For each clause $C_j$, let $P_j$ be the set of indices of positive literals and $N_j$ the set of indices of negated literals. The clause is satisfied iff at least one literal is true, i.e., $\sum_{i \in P_j} y_i + \sum_{i \in N_j}(1 - y_i) \ge 1$. Rearranging:
+- **Clause constraints:** For each clause $C_j$, let $P_j$ be the set of indices of positive literals and $N_j$ the set of indices of negated literals. The clause is satisfied iff at least one literal is true:
 
-$$\sum_{i \in P_j} y_i \;-\; \sum_{i \in N_j} y_i \;\ge\; 1 - \lvert N_j \rvert.$$
+$$\sum_{i \in P_j} y_i \;+\; \sum_{i \in N_j} (1 - y_i) \;\ge\; 1.$$
 
-- **Bound constraints:** $0 \le y_i \le 1$ for each $i$.
+- **Bound constraints:** $0 \le y_i \le 1$ for each $i$ (together with integrality, this forces $y_i \in \{0,1\}$).
 
 The ILP has $n$ variables, $m + 2n$ constraints, all constructible in polynomial time.
 
 **Example (satisfiable).** For $\phi = (x_1 \lor x_2 \lor \neg x_3) \land (\neg x_1 \lor x_2 \lor x_3) \land (x_1 \lor \neg x_2 \lor x_3)$:
 
 $$\begin{aligned}
-y_1 + y_2 - y_3 &\;\ge\; 0 & (C_1{:}\ P=\{1,2\},\ N=\{3\})\\
--y_1 + y_2 + y_3 &\;\ge\; 0 & (C_2{:}\ P=\{2,3\},\ N=\{1\})\\
-y_1 - y_2 + y_3 &\;\ge\; 0 & (C_3{:}\ P=\{1,3\},\ N=\{2\})\\
-y_i &\;\in\; \{0,1\}, & i = 1,2,3.
+y_1 + y_2 + (1-y_3) &\;\ge\; 1 & (C_1{:}\ P=\{1,2\},\ N=\{3\})\\
+(1-y_1) + y_2 + y_3 &\;\ge\; 1 & (C_2{:}\ P=\{2,3\},\ N=\{1\})\\
+y_1 + (1-y_2) + y_3 &\;\ge\; 1 & (C_3{:}\ P=\{1,3\},\ N=\{2\})\\
+0 \le y_i \le 1,\quad y_i &\;\in\; \mathbb{Z}, & i = 1,2,3.
 \end{aligned}$$
 
-The assignment $y_1 = y_2 = y_3 = 1$ satisfies all three constraints: $1+1-1 = 1 \ge 0$, $-1+1+1 = 1 \ge 0$, $1-1+1 = 1 \ge 0$.
+The assignment $y_1 = y_2 = y_3 = 1$ satisfies all three constraints: $1+1+0 = 2 \ge 1$, $0+1+1 = 2 \ge 1$, $1+0+1 = 2 \ge 1$.
 
-**Example (unsatisfiable).** For $\phi = (x_1 \lor x_2 \lor x_3) \land (\neg x_1 \lor \neg x_2 \lor \neg x_3) \land (\neg x_1 \lor \neg x_2 \lor x_3) \land (x_1 \lor \neg x_2 \lor \neg x_3) \land (\neg x_1 \lor x_2 \lor \neg x_3) \land (x_1 \lor x_2 \lor \neg x_3) \land (x_1 \lor \neg x_2 \lor x_3) \land (\neg x_1 \lor x_2 \lor x_3)$, which contains all $2^3 = 8$ possible sign patterns over three variables and is therefore unsatisfiable. The ILP becomes:
+**Example (unsatisfiable).** For $\phi = (x_1 \lor x_1 \lor x_1) \land (\neg x_1 \lor \neg x_1 \lor \neg x_1)$, the ILP becomes:
 
 $$\begin{aligned}
-y_1 + y_2 + y_3 &\;\ge\; 1\\
--y_1 - y_2 - y_3 &\;\ge\; -2\\
--y_1 - y_2 + y_3 &\;\ge\; -1\\
-y_1 - y_2 - y_3 &\;\ge\; -1\\
--y_1 + y_2 - y_3 &\;\ge\; -1\\
-y_1 + y_2 - y_3 &\;\ge\; 0\\
-y_1 - y_2 + y_3 &\;\ge\; 0\\
--y_1 + y_2 + y_3 &\;\ge\; 0\\
-y_i &\;\in\; \{0,1\}, \quad i = 1,2,3.
+3y_1 &\;\ge\; 1 & (C_1)\\
+3(1-y_1) &\;\ge\; 1 & (C_2)\\
+0 \le y_1 \le 1,\quad y_1 &\;\in\; \mathbb{Z}.
 \end{aligned}$$
 
-No assignment $y \in \{0,1\}^3$ satisfies all eight constraints simultaneously. For instance, $y_1=y_2=y_3=1$ fails constraint 2 ($-3 \not\ge -2$), and $y_1=y_2=y_3=0$ fails constraint 1 ($0 \not\ge 1$). One can verify all eight assignments and find that each violates at least one constraint, confirming infeasibility.
+$C_1$ requires $y_1 \ge \tfrac{1}{3}$, so $y_1 = 1$. $C_2$ requires $y_1 \le \tfrac{2}{3}$, so $y_1 = 0$. The two constraints are contradictory — the ILP is infeasible, confirming $\phi$ is unsatisfiable.
 
 **Correctness:** We prove $\phi$ is satisfiable $\iff$ the ILP has a feasible solution.
 
 $(\Rightarrow)$ Let $\sigma$ be a satisfying assignment. Set $y_i = 1$ if $\sigma(x_i) = \mathrm{T}$, else $y_i = 0$. Each clause $C_j$ has at least one true literal: a true positive literal $x_i$ contributes $+1$ via $y_i = 1$, and a true negative literal $\neg x_i$ contributes $+1$ via $(1 - y_i) = 1$. So $\sum_{i \in P_j} y_i + \sum_{i \in N_j}(1 - y_i) \ge 1$ holds for every $j$.
 
-$(\Leftarrow)$ Let $y \in \{0,1\}^n$ be a feasible ILP solution. Set $\sigma(x_i) = \mathrm{T}$ iff $y_i = 1$. For each clause $C_j$, the constraint gives $\sum_{i \in P_j} y_i + \sum_{i \in N_j}(1 - y_i) \ge 1$, so at least one literal in $C_j$ is true under $\sigma$. $\square$
+$(\Leftarrow)$ Let $y \in \mathbb{Z}^n$ with $0 \le y_i \le 1$ be a feasible ILP solution. Set $\sigma(x_i) = \mathrm{T}$ iff $y_i = 1$. For each clause $C_j$, the constraint gives $\sum_{i \in P_j} y_i + \sum_{i \in N_j}(1 - y_i) \ge 1$, so at least one literal in $C_j$ is true under $\sigma$. $\square$
