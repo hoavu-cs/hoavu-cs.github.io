@@ -346,7 +346,7 @@ end
       width=8.5cm, height=4.6cm,
       domain=0:10, samples=100,
       axis lines=left, tick style={draw=none},
-      xtick={3}, xticklabels={$n_0$}, ytick=\empty,
+      xtick={5.46}, xticklabels={$n_0$}, ytick=\empty,
       xlabel={$n$},
       ymin=0, ymax=110, xmin=0, xmax=10,
       legend pos=north west,
@@ -356,7 +356,7 @@ end
       \addlegendentry{$c\cdot g(n)$}
       \addplot[thick, mRed] {4*x + 8};
       \addlegendentry{$f(n)$}
-      \draw[dashed, mGray] (axis cs:3,0) -- (axis cs:3,110);
+      \draw[dashed, mGray] (axis cs:5.46,0) -- (axis cs:5.46,29.81);
     \end{axis}
   \end{tikzpicture}
   \end{center}
@@ -379,7 +379,7 @@ end
 
 % =========================================================================
 \begin{frame}{Example: $n^2 = O(1.5^n)$}
-  Take $c = 1$ and $n_0 = 14$.
+  Take $c = 1$ and $n_0 = 12.43$.
 
   \begin{center}
   \begin{tikzpicture}
@@ -389,7 +389,7 @@ end
       axis lines=left, tick style={draw=none},
       xlabel={$n$},
       ymin=0, ymax=500, xmin=0, xmax=20,
-      xtick={0,5,14,20},
+      xtick={0,5,12.43,20},
       legend pos=north west,
       legend style={draw=none, fill=none, font=\small},
     ]
@@ -397,13 +397,13 @@ end
       \addlegendentry{$n^2$}
       \addplot[thick, mRed] {1.5^x};
       \addlegendentry{$1.5^n$}
-      \draw[dashed, mGray] (axis cs:14,0) -- (axis cs:14,500);
+      \draw[dashed, mGray] (axis cs:12.43,0) -- (axis cs:12.43,500);
     \end{axis}
   \end{tikzpicture}
   \end{center}
   \pause 
   \begin{center}
-    From $n = 14$ onward, $n^2 \le 1.5^n$.
+    From $n = 12.43$ onward, $n^2 \le 1.5^n$.
   \end{center}
 \end{frame}
 
