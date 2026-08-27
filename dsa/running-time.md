@@ -48,7 +48,7 @@ end
 
 - Lines 1, 2, 3 and 6 each runs $n-1$ times.
 - Lines 4, 5, and 6 each runs at most $(n-1) + (n-2) + (n-3) + \ldots + 1$ times.
-- Line 7 runs once.
+- Line 7 runs $n-1$ times.
 
 Recall that
 
@@ -81,9 +81,7 @@ end
 Hint: use the geometric series formula below.
 
 $$
-\boxed{
 \sum_{i=0}^{m} r^i = \frac{r^{m+1} - 1}{r-1}, \text{ for } r \neq 1.
-}
 $$
 
 <div class="sectionlecturebox">
@@ -92,9 +90,9 @@ Asymptotic Notation
 
 We often want to measure the growth of the running time as $n$ increases. For example, when $T(n) = n^2/2 + n/2 - 1$, the term $n^2$ dictates the growth in terms of $n$. We often use asymptotic notation to denote the running time to make our life easier. We use the notation $f(n) = O(g(n))$ to say that the growth of $f(n)$ is no more than the growth of $g(n)$.
 
-<div class="lecturebox">
-<b>Definition</b>: We say $f(n) = O(g(n))$ if there exist constants $c > 0$ and $n_0$ such that $f(n) \le c \cdot g(n)$ for all $n \geq n_0$.
-</div>
+
+**Definition**: We say $f(n) = O(g(n))$ if there exist constants $c > 0$ and $n_0$ such that $f(n) \le c \cdot g(n)$ for all $n \geq n_0$.
+
 
 **Example**: $3n^2 + 5n + 10 = O(n^2)$. We can choose $c = 18$ and $n_0 = 1$. This is because for $n \geq 1$, it holds that
 
@@ -141,17 +139,13 @@ $$
 
 **Exercise**: Show that $2 \sqrt{n}  + n^{1/3} \log_2 n = O(\sqrt{n})$.
 
-<div class="lecturebox">
-<b>Definition</b>: $g(n) = \Omega(f(n))$ if $f(n) = O(g(n))$.
-</div>
+**Definition:** $g(n) = \Omega(f(n))$ if $f(n) = O(g(n))$.
 
 To summarize $f=O(g(n))$ means that $f(n)$ grows no faster than $g(n)$ and $f(n) = \Omega(g(n))$ means that $f(n)$ grows no slower than $g(n)$.
 
 We now need a notation to denote "similar growth rate".
 
-<div class="lecturebox">
-<b>Definition:</b> We say $f(n) = \Theta(g(n))$ if $f(n) = O(g(n))$ and $g(n) = O(f(n))$.
-</div>
+**Definition:** We say $f(n) = \Theta(g(n))$ if $f(n) = O(g(n))$ and $g(n) = O(f(n))$.
 
 Let us consider some examples.
 
@@ -176,9 +170,7 @@ This means neither $f(n)$ nor $g(n)$ grows strictly faster than the other.
 
 Finally, $o$ and $\omega$ are used to denote a "strictly slower growth rate" and "strictly faster growth rate" respectively.
 
-<div class="lecturebox">
-<b>Definition</b>: We say $f(n) = o(g(n))$ if for any constant $c > 0$, there exists a constant $n_0$ such that $f(n) < c \cdot g(n)$ for all $n \geq n_0$.
-</div>
+**Definition:** We say $f(n) = o(g(n))$ if for any constant $c > 0$, there exists a constant $n_0$ such that $f(n) < c \cdot g(n)$ for all $n \geq n_0$.
 
 This can also be shown using limits. Specifically, $f(n) = o(g(n))$ if
 
@@ -188,9 +180,7 @@ $$
 
 This means that $f(n)$ grows strictly slower than $g(n)$.
 
-<div class="lecturebox">
-<b>Definition</b>: We say $f(n) = \omega(g(n))$ if $g(n) = o(f(n))$.
-</div>
+**Definition:** We say $f(n) = \omega(g(n))$ if $g(n) = o(f(n))$.
 
 This means that $f(n)$ grows strictly faster than $g(n)$. This can also be shown using limits. Specifically, $f(n) = \omega(g(n))$ if
 
