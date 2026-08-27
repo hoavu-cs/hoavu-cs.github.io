@@ -21,41 +21,37 @@
 
 <style>
   .lecturebox {
-    /* Layout: 'hbox' equivalent */
-    display: inline-block; 
-    
-    /* Box Styling */
-    background-color: white;
-    border: 0.5pt solid black;
-    padding: 2px 5px; /* top/bottom 2pt, left/right 5pt */
-    
-    /* The Shadow: {Offset X} {Offset Y} {Blur} {Spread} {Color} */
-    /* LaTeX {2pt}{-2pt}{0pt}{black!90} */
-    box-shadow: 2pt 2pt 0pt 0pt rgba(0, 0, 0, 0.9);
+    /* Layout: full-width block with an underline rule */
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
 
+    /* The underline */
+    padding-bottom: 3px;
+    border-bottom: 0.5pt solid black;
+
+    margin-top: 12pt;
+    margin-bottom: 12pt;
   }
 </style>
 
 <style>
   .sectionlecturebox {
-    /* Layout: Changed to block and 100% width */
-    display: block; 
+    /* Layout: full-width heading with an underline rule */
+    display: block;
     width: 100%;
-    
-    /* Box Geometry */
-    box-sizing: border-box; /* Crucial: includes padding/border in the 100% width */
-    background-color: white;
-    border: 0.5pt solid black;
-    padding: 2px 5px;
-    
+    box-sizing: border-box;
+
     /* Typography */
     font-size: 1.2em;
     font-weight: bold;
-    margin-top: 10pt;
-    margin-bottom: 10pt;
-    
-    /* The Shadow */
-    box-shadow: 2pt 2pt 0pt 0pt rgba(0, 0, 0, 0.9);
+
+    /* The underline */
+    padding-bottom: 3px;
+    border-bottom: 0.5pt solid black;
+
+    margin-top: 16pt;
+    margin-bottom: 8pt;
   }
 </style>
 
