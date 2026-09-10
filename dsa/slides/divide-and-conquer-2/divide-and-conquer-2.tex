@@ -174,9 +174,12 @@ end
     \item $x$ = pairs $(m,m)$, \quad $y$ = pairs with exactly one $m$, \quad $t$ = pairs with no $m$.
   \end{itemize}
 
+  \pause
+
   \bigskip
   Then $x + y + t = \dfrac{n}{2}$ and $m$ occurs $2x + y > \dfrac{n}{2}$ times.
 
+  \pause
   \bigskip
   Subtracting the first from the second:
   \[
@@ -405,33 +408,12 @@ end
   \end{alertblock}
 \end{frame}
 
-\begin{frame}{$8$ versus $7$}
-  \begin{center}
-  \begin{tikzpicture}
-    \begin{axis}[
-      width=10cm, height=5cm,
-      domain=1:1000, samples=100,
-      axis lines=left, tick style={draw=none},
-      xlabel={$n$}, ylabel={operations},
-      ymode=log, xmode=log,
-      legend pos=north west,
-      legend style={draw=none, fill=none, font=\small},
-    ]
-      \addplot[thick, mRed] {x^3};
-      \addlegendentry{$n^3$ \ (naive, 8 products)}
-      \addplot[thick, mLightBlue] {x^2.807};
-      \addlegendentry{$n^{2.807}$ \ (Strassen, 7 products)}
-    \end{axis}
-  \end{tikzpicture}
-  \end{center}
 
-  \begin{center}
-    \small One fewer multiplication per level, compounded over $\log_2 n$ levels.
-  \end{center}
-\end{frame}
 
-\begin{frame}[fragile]{Implementation}
-  \begin{lstlisting}
+\begin{frame}[fragile]{Implementation: Splitting into Blocks}
+  Views avoid copying the quadrants out of $A$ and $B$.
+
+  \begin{lstlisting}[basicstyle=\ttfamily\small]
 function strassen(A::AbstractMatrix, B::AbstractMatrix)
     n = size(A, 1)
     n <= 32 && return A * B          # base case
@@ -441,6 +423,16 @@ function strassen(A::AbstractMatrix, B::AbstractMatrix)
     A21, A22 = @view(A[mid+1:end, 1:mid]), @view(A[mid+1:end, mid+1:end])
     B11, B12 = @view(B[1:mid, 1:mid]),     @view(B[1:mid, mid+1:end])
     B21, B22 = @view(B[mid+1:end, 1:mid]), @view(B[mid+1:end, mid+1:end])
+
+    # continued on the next slide
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Implementation: Products and Assembly}
+  Seven recursive calls, then four block additions.
+
+  \begin{lstlisting}[basicstyle=\ttfamily\small]
+    # ... still inside strassen(A, B)
 
     P1 = strassen(A11, B12 - B22);   P2 = strassen(A11 + A12, B22)
     P3 = strassen(A21 + A22, B11);   P4 = strassen(A22, B21 - B11)
@@ -477,9 +469,5 @@ end
   \end{center}
 \end{frame}
 
-% =========================================================================
-\begin{frame}[standout]
-  Questions?
-\end{frame}
 
 \end{document}
