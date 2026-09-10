@@ -91,6 +91,8 @@
   \end{tikzpicture}
   \end{center}
 
+  \pause
+
   \bigskip
   Expanding directly:
   \[
@@ -122,7 +124,7 @@
   \[
     P_1 = x_1 y_1, \qquad P_2 = x_0 y_0, \qquad P_3 = (x_1 + x_0)(y_1 + y_0).
   \]
-
+  \pause
   \bigskip
   Then
   \[
@@ -458,10 +460,9 @@ end
 \end{frame}
 
 \begin{frame}[fragile]{Implementation}
-  \begin{lstlisting}
+  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 function median_of_medians(A, k)
     n = length(A)
-
     # Base case: sort and return the k-th smallest
     if n <= 10
         return sort(A)[k]
@@ -469,7 +470,6 @@ function median_of_medians(A, k)
 
     # Steps 1-2: groups of 5, median of each
     medians = [sort(A[i:i+4])[3] for i in 1:5:n-n%5-4]
-
     # Step 3: recursively find the median of medians
     p = median_of_medians(medians, (length(medians) + 1) div 2)
 
@@ -496,7 +496,7 @@ end
                         & worst case      & in practice \\
     \midrule
     Sorting             & $O(n \log n)$   & simple, often fine \\
-    Quickselect         & $O(n^2)$        & expected $O(n)$, small constants \\
+    Quickselect         & $O(n)$ (randomized, expected)        & small constants \\
     Median of medians   & $O(n)$          & large constants \\
     \bottomrule
   \end{tabular}
@@ -509,9 +509,5 @@ end
   \end{center}
 \end{frame}
 
-% =========================================================================
-\begin{frame}[standout]
-  Questions?
-\end{frame}
 
 \end{document}
