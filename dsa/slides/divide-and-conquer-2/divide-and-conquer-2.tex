@@ -409,7 +409,6 @@ end
 \end{frame}
 
 
-
 \begin{frame}[fragile]{Implementation: Splitting into Blocks}
   Views avoid copying the quadrants out of $A$ and $B$.
 
@@ -436,15 +435,12 @@ function strassen(A::AbstractMatrix, B::AbstractMatrix)
 
     P1 = strassen(A11, B12 - B22);   P2 = strassen(A11 + A12, B22)
     P3 = strassen(A21 + A22, B11);   P4 = strassen(A22, B21 - B11)
-    P5 = strassen(A11 + A22, B11 + B22)
-    P6 = strassen(A12 - A22, B21 + B22)
+    P5 = strassen(A11 + A22, B11 + B22); P6 = strassen(A12 - A22, B21 + B22)
     P7 = strassen(A11 - A21, B11 + B12)
 
     C = Matrix{eltype(A)}(undef, n, n)
-    C[1:mid, 1:mid]         .= P5 + P4 - P2 + P6
-    C[1:mid, mid+1:end]     .= P1 + P2
-    C[mid+1:end, 1:mid]     .= P3 + P4
-    C[mid+1:end, mid+1:end] .= P1 + P5 - P3 - P7
+    C[1:mid, 1:mid]         .= P5 + P4 - P2 + P6; C[1:mid, mid+1:end]     .= P1 + P2
+    C[mid+1:end, 1:mid]     .= P3 + P4; C[mid+1:end, mid+1:end] .= P1 + P5 - P3 - P7
     return C
 end
   \end{lstlisting}
