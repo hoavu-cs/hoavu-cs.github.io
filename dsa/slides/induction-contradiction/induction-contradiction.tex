@@ -1,0 +1,238 @@
+% Proof Techniques: Induction and Contradiction -- Metropolis beamer slides
+% Compile: pdflatex induction-contradiction.tex (x2)
+\documentclass[10pt,aspectratio=169]{beamer}
+
+\usetheme{metropolis}
+\metroset{block=fill, numbering=fraction, progressbar=frametitle}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, decorations.pathreplacing, calc}
+
+% ---- colors -------------------------------------------------------------
+\definecolor{mLightBlue}{HTML}{4C72B0}
+\definecolor{mGreen}{HTML}{55A868}
+\definecolor{mRed}{HTML}{C44E52}
+\definecolor{mGray}{HTML}{BFBFBF}
+\setbeamercolor{alerted text}{fg=mRed}
+
+% ---- title --------------------------------------------------------------
+\title{Proof Techniques}
+\subtitle{Induction and Contradiction}
+\date{}
+\author{}
+
+\begin{document}
+
+\maketitle
+
+% =========================================================================
+\section{Proof by Induction}
+
+\begin{frame}{The Template}
+  To prove $P(n)$ holds for all integers $n \ge 1$:
+
+  \bigskip
+  \begin{enumerate}
+    \item \textbf{Base case.} Prove $P(1)$ directly.
+    \bigskip
+    \item \textbf{Inductive step.} Assume $P(k)$ holds for some $k \ge 1$
+          (the \alert{induction hypothesis}). Use it to prove $P(k+1)$.
+  \end{enumerate}
+
+  \bigskip
+  \begin{center}
+    Like dominoes: knock the first one over, and each one knocks over the next.
+  \end{center}
+\end{frame}
+
+% =========================================================================
+\begin{frame}{Example 1: Sum of the First $n$ Integers}
+  \begin{block}{Claim}
+    $\displaystyle 1 + 2 + \cdots + n = \frac{n(n+1)}{2}$
+  \end{block}
+
+  \pause
+  \bigskip
+  \textbf{Base case} ($n = 1$): $\quad 1 = \dfrac{1 \cdot 2}{2} = 1$. \checkmark
+
+  \pause
+  \bigskip
+  \textbf{Inductive step.} Assume $1 + \cdots + k = \dfrac{k(k+1)}{2}$.  Then
+  \[
+    1 + 2 + \cdots + k + (k+1)
+    = \frac{k(k+1)}{2} + (k+1)
+    = (k+1)\!\left(\frac{k}{2} + 1\right)
+    = \frac{(k+1)(k+2)}{2}. \quad \square
+  \]
+\end{frame}
+
+% =========================================================================
+\begin{frame}{Example 2: Sum of Squares}
+  \begin{block}{Claim}
+    $\displaystyle 1^2 + 2^2 + \cdots + n^2 = \frac{n(n+1)(2n+1)}{6}$
+  \end{block}
+
+  \pause
+  \bigskip
+  \textbf{Base case} ($n = 1$): $\quad 1 = \dfrac{1 \cdot 2 \cdot 3}{6} = 1$. \checkmark
+
+  \pause
+  \bigskip
+  \textbf{Inductive step.} Assume $1^2 + \cdots + k^2 = \dfrac{k(k+1)(2k+1)}{6}$. Then
+  \begin{align*}
+    1^2 + \cdots + k^2 + (k+1)^2
+    &= \frac{k(k+1)(2k+1)}{6} + (k+1)^2 \\
+    &= \frac{(k+1)\bigl[k(2k+1) + 6(k+1)\bigr]}{6} \\
+    &= \frac{(k+1)(2k^2 + 7k + 6)}{6}
+     = \frac{(k+1)(k+2)(2k+3)}{6}. \quad \square
+  \end{align*}
+\end{frame}
+
+% =========================================================================
+\begin{frame}{Example 3: Every 5th Fibonacci Number is Divisible by 5}
+  Recall $F_1 = 1,\; F_2 = 1,\; F_n = F_{n-1} + F_{n-2}$.
+
+  \begin{block}{Claim}
+    $5 \mid F_{5n}$ for all $n \ge 1$.
+  \end{block}
+
+  \pause
+  \bigskip
+  \textbf{Base case} ($n = 1$): $F_5 = 5$. \checkmark
+
+  \pause
+  \bigskip
+  \textbf{Inductive step.} Assume $5 \mid F_{5k}$.  Use the identity
+  \[
+    F_{m+n} = F_{m-1}F_n + F_m F_{n+1}.
+  \]
+  Setting $m = 5k$, $n = 5$:
+  \[
+    F_{5(k+1)} = F_{5k-1}\,F_5 + F_{5k}\,F_6
+               = 5\,F_{5k-1} + 8\,F_{5k}.
+  \]
+  Both terms are divisible by 5 (the first because $F_5 = 5$, the second by the induction hypothesis), so $5 \mid F_{5(k+1)}$. $\square$
+\end{frame}
+
+% =========================================================================
+\begin{frame}{Example 4: Edges in a Tree}
+  \begin{block}{Claim}
+    A tree with $n$ nodes has exactly $n - 1$ edges.
+  \end{block}
+
+  \pause
+  \bigskip
+  \textbf{Base case} ($n = 1$): A single node has $0 = 1 - 1$ edges. \checkmark
+
+  \pause
+  \bigskip
+  \textbf{Inductive step.}
+  Every tree with $k + 1 \ge 2$ nodes has at least one \alert{leaf}
+  (a node of degree 1). Remove that leaf and its edge.
+
+  \bigskip
+  The remaining graph is a tree on $k$ nodes, which by the induction
+  hypothesis has $k - 1$ edges.
+  Restoring the leaf adds back exactly $1$ edge, giving
+  \[
+    (k - 1) + 1 = k = (k+1) - 1 \text{ edges.} \quad \square
+  \]
+\end{frame}
+
+% =========================================================================
+\section{Proof by Contradiction}
+
+\begin{frame}{The Template}
+  To prove statement $P$:
+
+  \bigskip
+  \begin{enumerate}
+    \item \textbf{Assume} $\neg P$ (the negation of $P$).
+    \bigskip
+    \item \textbf{Derive} a statement that is \alert{always false}
+          (a contradiction).
+    \bigskip
+    \item \textbf{Conclude} $P$ must be true.
+  \end{enumerate}
+\end{frame}
+
+% =========================================================================
+\begin{frame}{Example 1: $n^2$ Even $\Rightarrow$ $n$ Even}
+  \begin{block}{Claim}
+    If $n^2$ is even, then $n$ is even.
+  \end{block}
+
+  \pause
+  \bigskip
+  \textbf{Proof.}  Assume for contradiction that $n^2$ is even but $n$ is \alert{odd}.
+
+  \pause
+  \bigskip
+  Then $n = 2k + 1$ for some integer $k$, so
+  \[
+    n^2 = (2k+1)^2 = 4k^2 + 4k + 1 = 2(2k^2 + 2k) + 1,
+  \]
+  which is \alert{odd}.  This contradicts $n^2$ being even. $\square$
+\end{frame}
+
+% =========================================================================
+\begin{frame}{Example 2: $\sqrt{2}$ is Irrational}
+  \begin{block}{Claim}
+    $\sqrt{2} \notin \mathbb{Q}$.
+  \end{block}
+
+  \pause
+  \bigskip
+  \textbf{Proof.} Assume $\sqrt{2} = \dfrac{p}{q}$ with $p, q \in \mathbb{Z}$,
+  $q \ne 0$, and $\gcd(p, q) = 1$.
+
+  \pause
+  \bigskip
+  Then $p^2 = 2q^2$, so $p^2$ is even $\Rightarrow$ $p$ is even (Example 1).
+  Write $p = 2m$:
+  \[
+    4m^2 = 2q^2 \;\Longrightarrow\; q^2 = 2m^2,
+  \]
+  so $q^2$ is even $\Rightarrow$ $q$ is even.
+
+  \bigskip
+  But then $2 \mid p$ and $2 \mid q$, contradicting $\gcd(p,q) = 1$. $\square$
+\end{frame}
+
+% =========================================================================
+\begin{frame}{Example 3: Infinitely Many Primes}
+  \begin{block}{Claim}
+    There are infinitely many prime numbers.
+  \end{block}
+
+  \pause
+  \bigskip
+  \textbf{Proof.} Assume for contradiction that there are only finitely many primes:
+  $p_1, p_2, \ldots, p_k$.
+
+  \pause
+  \bigskip
+  Let $N = p_1 p_2 \cdots p_k + 1$.
+
+  \pause
+  \bigskip
+  Since $N > 1$, it has a prime factor $p$.
+  That prime must be one of $p_1, \ldots, p_k$, so $p \mid p_1 p_2 \cdots p_k$.
+
+  \bigskip
+  But $p \mid N$ and $p \mid p_1 \cdots p_k$ together imply
+  \[
+    p \mid \bigl(N - p_1 p_2 \cdots p_k\bigr) = 1,
+  \]
+  which is impossible. $\square$
+\end{frame}
+
+% =========================================================================
+\begin{frame}[standout]
+  Questions?
+\end{frame}
+
+\end{document}
