@@ -56,7 +56,7 @@
 
   \pause
   \bigskip
-  \textbf{Base case} ($n = 1$): $\quad 1 = \dfrac{1 \cdot 2}{2} = 1$. \checkmark
+  \textbf{Base case} ($n = 1$): $\quad 1 = \dfrac{1 \cdot 2}{2} = 1$.
 
   \pause
   \bigskip
@@ -75,19 +75,73 @@
     $\displaystyle 1^2 + 2^2 + \cdots + n^2 = \frac{n(n+1)(2n+1)}{6}$
   \end{block}
 
-  \pause
   \bigskip
-  \textbf{Base case} ($n = 1$): $\quad 1 = \dfrac{1 \cdot 2 \cdot 3}{6} = 1$. \checkmark
+  \textbf{Base case} ($n = 1$): $\quad 1 = \dfrac{1 \cdot 2 \cdot 3}{6} = 1$.
 
-  \pause
   \bigskip
-  \textbf{Inductive step.} Assume $1^2 + \cdots + k^2 = \dfrac{k(k+1)(2k+1)}{6}$. Then
+  \textbf{Inductive step.} Assume
+  \[
+    1^2 + \cdots + k^2 = \frac{k(k+1)(2k+1)}{6}.
+  \]
+  We need to show the formula holds for $k+1$.
+\end{frame}
+
+\begin{frame}{Example 2: Sum of Squares (Inductive Step)}
+  Adding $(k+1)^2$ to both sides of the induction hypothesis:
   \begin{align*}
     1^2 + \cdots + k^2 + (k+1)^2
-    &= \frac{k(k+1)(2k+1)}{6} + (k+1)^2 \\
-    &= \frac{(k+1)\bigl[k(2k+1) + 6(k+1)\bigr]}{6} \\
-    &= \frac{(k+1)(2k^2 + 7k + 6)}{6}
-     = \frac{(k+1)(k+2)(2k+3)}{6}. \quad \square
+    &= \frac{k(k+1)(2k+1)}{6} + (k+1)^2 \\[0.4em]
+    &= \frac{(k+1)\bigl[k(2k+1) + 6(k+1)\bigr]}{6} \\[0.4em]
+    &= \frac{(k+1)(2k^2 + 7k + 6)}{6} \\[0.4em]
+    &= \frac{(k+1)(k+2)(2k+3)}{6}. \quad \square
+  \end{align*}
+
+  \bigskip
+  \begin{center}
+    This matches the formula with $n = k+1$.
+  \end{center}
+\end{frame}
+
+% =========================================================================
+\begin{frame}{A Useful Lemma}
+  \begin{block}{Fibonacci Addition Identity}
+    For all $m \ge 1$ and $n \ge 1$:
+    \[
+      F_{m+n} = F_{m-1}\,F_n + F_m\,F_{n+1}.
+    \]
+  \end{block}
+
+  \bigskip
+  \textbf{Proof} (by induction on $n$, fixing $m$).
+
+  \bigskip
+  \textbf{Base case} ($n = 1$):
+  \[
+    F_{m-1}F_1 + F_m F_2 = F_{m-1} \cdot 1 + F_m \cdot 1 = F_{m+1}. \quad\checkmark
+  \]
+
+  \textbf{Base case} ($n = 2$):
+  \[
+    F_{m-1}F_2 + F_m F_3 = F_{m-1} + 2F_m = (F_{m-1}+F_m)+F_m = F_{m+1}+F_m = F_{m+2}. \quad\checkmark
+  \]
+\end{frame}
+
+\begin{frame}{A Useful Lemma (Inductive Step)}
+  \textbf{Inductive hypothesis.} Assume the identity holds for $n = k-1$ and $n = k$.
+
+  \bigskip
+  \textbf{Goal:} show it for $n = k+1$.
+
+  \bigskip
+  Using the Fibonacci recurrence $F_{m+k+1} = F_{m+k} + F_{m+k-1}$ and both hypotheses:
+  \begin{align*}
+    F_{m+k+1}
+    &= F_{m+k} + F_{m+k-1} \\
+    &= \bigl[F_{m-1}F_k + F_m F_{k+1}\bigr]
+     + \bigl[F_{m-1}F_{k-1} + F_m F_k\bigr] \\
+    &= F_{m-1}\underbrace{(F_k + F_{k-1})}_{F_{k+1}}
+     + F_m\underbrace{(F_{k+1} + F_k)}_{F_{k+2}} \\
+    &= F_{m-1}\,F_{k+1} + F_m\,F_{k+2}. \quad \square
   \end{align*}
 \end{frame}
 
@@ -99,22 +153,25 @@
     $5 \mid F_{5n}$ for all $n \ge 1$.
   \end{block}
 
-  \pause
   \bigskip
-  \textbf{Base case} ($n = 1$): $F_5 = 5$. \checkmark
+  \textbf{Base case} ($n = 1$): $F_5 = 5$, so $5 \mid F_5$.
 
-  \pause
   \bigskip
-  \textbf{Inductive step.} Assume $5 \mid F_{5k}$.  Use the identity
+  \textbf{Inductive step.} Assume $5 \mid F_{5k}$.
+  Apply the Fibonacci addition identity with $m = 5k$, $n = 5$:
   \[
-    F_{m+n} = F_{m-1}F_n + F_m F_{n+1}.
+    F_{5k+5} = F_{5k-1}\,F_5 + F_{5k}\,F_6
+             = 5\,F_{5k-1} + 8\,F_{5k}.
   \]
-  Setting $m = 5k$, $n = 5$:
-  \[
-    F_{5(k+1)} = F_{5k-1}\,F_5 + F_{5k}\,F_6
-               = 5\,F_{5k-1} + 8\,F_{5k}.
-  \]
-  Both terms are divisible by 5 (the first because $F_5 = 5$, the second by the induction hypothesis), so $5 \mid F_{5(k+1)}$. $\square$
+
+  \bigskip
+  Both terms are divisible by 5:
+  \begin{itemize}
+    \item $5\,F_{5k-1}$: contains the factor $5$.
+    \item $8\,F_{5k}$: divisible by 5 by the induction hypothesis.
+  \end{itemize}
+
+  Therefore $5 \mid F_{5(k+1)}$. $\square$
 \end{frame}
 
 % =========================================================================
@@ -125,7 +182,7 @@
 
   \pause
   \bigskip
-  \textbf{Base case} ($n = 1$): A single node has $0 = 1 - 1$ edges. \checkmark
+  \textbf{Base case} ($n = 1$): A single node has $0 = 1 - 1$ edges.
 
   \pause
   \bigskip
