@@ -417,7 +417,7 @@ function strassen(A::AbstractMatrix, B::AbstractMatrix)
     n = size(A, 1)
     n <= 32 && return A * B          # base case
 
-    mid = n div 2
+    mid = div(n, 2)
     A11, A12 = @view(A[1:mid, 1:mid]),     @view(A[1:mid, mid+1:end])
     A21, A22 = @view(A[mid+1:end, 1:mid]), @view(A[mid+1:end, mid+1:end])
     B11, B12 = @view(B[1:mid, 1:mid]),     @view(B[1:mid, mid+1:end])

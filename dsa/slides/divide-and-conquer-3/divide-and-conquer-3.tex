@@ -197,7 +197,7 @@ function karatsuba(x::BigInt, y::BigInt)
     end
 
     n = max(ndigits(x, base=2), ndigits(y, base=2))
-    m = n div 2
+    m = div(n, 2)
 
     # Split x = x1 * 2^m + x0,  y = y1 * 2^m + y0
     x1, x0 = x >> m, x & ((BigInt(1) << m) - 1)
@@ -471,7 +471,7 @@ function median_of_medians(A, k)
     # Steps 1-2: groups of 5, median of each
     medians = [sort(A[i:i+4])[3] for i in 1:5:n-n%5-4]
     # Step 3: recursively find the median of medians
-    p = median_of_medians(medians, (length(medians) + 1) div 2)
+    p = median_of_medians(medians, div(length(medians) + 1, 2))
 
     # Step 4: partition and recurse
     L = [a for a in A if a < p]

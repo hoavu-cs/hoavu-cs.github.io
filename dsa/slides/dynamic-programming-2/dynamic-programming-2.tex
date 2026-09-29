@@ -440,7 +440,7 @@ end
 function knapsack_weight(weights, values, W)
     n = length(weights)
     V_max = sum(values)
-    INF = typemax(Int) div 2                  # div 2 avoids overflow
+    INF = div(typemax(Int), 2)                # halved to avoid overflow
     M = OffsetArray(fill(INF, n + 1, V_max + 1), 0:n, 0:V_max)
     M[0, 0] = 0
 
@@ -665,7 +665,7 @@ function weighted_interval_scheduling(starts, finishes, weights)
     for i in 1:n
         lo, hi = 1, i - 1
         while lo <= hi
-            mid = (lo + hi) div 2
+            mid = div(lo + hi, 2)
             if f[mid] <= s[i]
                 p[i] = mid; lo = mid + 1
             else

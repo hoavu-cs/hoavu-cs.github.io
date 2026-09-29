@@ -430,7 +430,7 @@ function merge_sort(A)
     if n <= 1
         return A
     else
-        mid = n div 2
+        mid = div(n, 2)
         L = @view A[1:mid]
         R = @view A[mid+1:end]
 
