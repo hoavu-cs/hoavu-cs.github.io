@@ -8,6 +8,8 @@ permalink: /dsa/divide-and-conquer-1/
 
 # Divide and Conquer Part 1 (Tiling Puzzle, Binary Search, Merge Sort, Solving Recurrences)
 
+[Lecture slides (PDF)](/dsa/slides/divide-and-conquer-1/divide-and-conquer-1.pdf)
+
 <div class="sectionlecturebox">
 Introduction
 </div>

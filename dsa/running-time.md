@@ -8,6 +8,8 @@ permalink: /dsa/running-time/
 
 # Running Time and Asymptotic Notation
 
+[Lecture slides (PDF)](/dsa/slides/running-time/running-time.pdf)
+
 Algorithms are the backbone of computer science. Broadly speaking, an algorithm is a precise, unambiguous set of instructions designed to solve a specific problem. Analyzing an algorithm typically involves two main components:
 
 - Proving mathematically that the algorithm is correct.

@@ -8,6 +8,8 @@ permalink: /dsa/greedy-1/
 
 # Greedy Algorithms 1
 
+[Lecture slides (PDF)](/dsa/slides/greedy-1/greedy-1.pdf)
+
 Greedy algorithms, informally, are algorithms that aim to find solutions by performing a series of steps each of which is greedy in some sense.
 
 <div class="sectionlecturebox">Storing Files on Tape</div>

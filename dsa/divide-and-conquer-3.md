@@ -8,6 +8,8 @@ permalink: /dsa/divide-and-conquer-3/
 
 # Divide and Conquer Part 3 (Karatsuba's Algorithm, Linear Time Selection)
 
+[Lecture slides (PDF)](/dsa/slides/divide-and-conquer-3/divide-and-conquer-3.pdf)
+
 <div class="sectionlecturebox">
 Karatsuba's Algorithm for Integer Multiplication
 </div>

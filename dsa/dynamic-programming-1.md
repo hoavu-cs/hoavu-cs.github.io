@@ -8,6 +8,8 @@ permalink: /dsa/dynamic-programming-1/
 
 # Dynamic Programming Part 1 (Fibonacci, Shortest Path in DAG, LIS, Edit Distance)
 
+[Lecture slides (PDF)](/dsa/slides/dynamic-programming-1/dynamic-programming-1.pdf)
+
 ## Introduction
 
 One may think of dynamic programming as recursion with memoization.

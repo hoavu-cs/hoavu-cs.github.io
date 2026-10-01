@@ -8,6 +8,8 @@ permalink: /dsa/divide-and-conquer-2/
 
 # Divide and Conquer Part 2 (Majority Element, Strassen's Algorithm)
 
+[Lecture slides (PDF)](/dsa/slides/divide-and-conquer-2/divide-and-conquer-2.pdf)
+
 <div class="sectionlecturebox">
 Finding the Majority
 </div>

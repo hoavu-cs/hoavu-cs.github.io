@@ -8,6 +8,8 @@ permalink: /dsa/dynamic-programming-2/
 
 # Dynamic Programming Part 2 (LCS, Knapsack, Weighted Interval Scheduling)
 
+[Lecture slides (PDF)](/dsa/slides/dynamic-programming-2/dynamic-programming-2.pdf)
+
 <div class="sectionlecturebox">
 Longest Common Subsequence
 </div>
