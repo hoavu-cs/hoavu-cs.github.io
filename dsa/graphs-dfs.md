@@ -8,6 +8,8 @@ permalink: /dsa/graphs-dfs/
 
 # Graph Representations and Depth First Search (DFS)
 
+[Lecture slides (PDF)](/dsa/slides/graphs-dfs/graphs-dfs.pdf)
+
 A **graph** $G = (V, E)$ is a set of vertices $V$ and edges $E$. A graph can be directed or undirected, weighted or unweighted. Let $n = \|V\|$ and $m = \|E\|$.
 
 We study graphs because they powerfully model many real-world problems that encode pairwise relationships. For example, the internet can be modeled as a graph where each webpage is a vertex and an edge from page $A$ to page $B$ indicates that $A$ links to $B$. Similarly, a social network can be modeled as a graph where each person is a vertex and an edge between two vertices indicates that the two people are friends. There are biological networks, transportation networks, and many more. Graph algorithms are fundamental tools for analyzing these complex systems.
