@@ -512,7 +512,6 @@ end
     In a DAG, for every edge $u \to v$: \quad $\mathrm{post}[u] > \mathrm{post}[v]$.
   \end{block}
 
-  \pause
   \bigskip
   \textbf{Why.} When DFS traverses $u \to v$ there are two cases:
   \begin{itemize}
@@ -521,13 +520,52 @@ end
     \item $v$ is \alert{already finished}: $\mathrm{post}[v]$ was assigned before
           DFS even started $u$, so $\mathrm{post}[v] < \mathrm{pre}[u] < \mathrm{post}[u]$.
   \end{itemize}
-  (A back edge $u \to v$ where $v$ is currently on the stack would mean $v$ is an
-  ancestor of $u$ — a cycle — impossible in a DAG.)
+  (A back edge $u \to v$ where $v$ is on the stack $\Rightarrow$ cycle $\Rightarrow$
+  impossible in a DAG.)
+\end{frame}
 
-  \pause
+\begin{frame}{Post Numbers and Topological Order: Visualization}
+  Each vertex's active interval $[\mathrm{pre},\mathrm{post}]$ on the clock:
+
   \bigskip
   \begin{center}
-    Sorting vertices by \alert{decreasing} $\mathrm{post}$ gives a topological order.
+  \begin{tikzpicture}[scale=1.0]
+    % Case 1: v nested inside u
+    \node[anchor=west, font=\small] at (-0.3, 1.6) {\textbf{Case 1:} $v$ unvisited when $u \to v$ is traversed};
+    \draw[thick, mLightBlue] (0, 1.0) -- (7.2, 1.0);
+    \draw[thick, mLightBlue!60!black, fill=mLightBlue!25, rounded corners=2pt]
+      (0.3, 0.75) rectangle (7.0, 1.25);
+    \node[font=\small] at (3.65, 1.0) {$u$};
+    \draw[thick, mRed!80!black, fill=mRed!25, rounded corners=2pt]
+      (1.5, 0.75) rectangle (5.5, 1.25);
+    \node[font=\small] at (3.5, 1.0) {};
+    \draw[thick, mRed!60!black, fill=mRed!25, rounded corners=2pt]
+      (1.8, 0.78) rectangle (5.2, 1.22);
+    \node[font=\small] at (3.5, 1.0) {$v$};
+    \node[font=\scriptsize, below] at (0.3,  0.75) {$\mathrm{pre}[u]$};
+    \node[font=\scriptsize, below] at (1.8,  0.75) {$\mathrm{pre}[v]$};
+    \node[font=\scriptsize, below] at (5.2,  0.75) {$\mathrm{post}[v]$};
+    \node[font=\scriptsize, below] at (7.0,  0.75) {$\mathrm{post}[u]$};
+
+    % Case 2: v entirely before u
+    \node[anchor=west, font=\small] at (-0.3, -0.1) {\textbf{Case 2:} $v$ already finished before $u$ starts};
+    \draw[thick, mLightBlue] (0, -0.7) -- (7.2, -0.7);
+    \draw[thick, mRed!60!black, fill=mRed!25, rounded corners=2pt]
+      (0.3, -0.95) rectangle (2.8, -0.45);
+    \node[font=\small] at (1.55, -0.7) {$v$};
+    \draw[thick, mLightBlue!60!black, fill=mLightBlue!25, rounded corners=2pt]
+      (4.2, -0.95) rectangle (7.0, -0.45);
+    \node[font=\small] at (5.6, -0.7) {$u$};
+    \node[font=\scriptsize, below] at (0.3, -0.95) {$\mathrm{pre}[v]$};
+    \node[font=\scriptsize, below] at (2.8, -0.95) {$\mathrm{post}[v]$};
+    \node[font=\scriptsize, below] at (4.2, -0.95) {$\mathrm{pre}[u]$};
+    \node[font=\scriptsize, below] at (7.0, -0.95) {$\mathrm{post}[u]$};
+  \end{tikzpicture}
+  \end{center}
+
+  \bigskip
+  \begin{center}
+    In both cases $\mathrm{post}[v] < \mathrm{post}[u]$, so sorting by \alert{decreasing} post gives a topological order.
   \end{center}
 \end{frame}
 
