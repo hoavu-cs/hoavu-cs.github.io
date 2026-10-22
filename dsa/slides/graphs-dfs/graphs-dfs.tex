@@ -450,20 +450,20 @@ end
 
 \begin{frame}[fragile]{Computing Pre and Post Numbers}
 \begin{lstlisting}
-clock   = 0
+clock   = 1
 pre     = zeros(Int, n)
 post    = zeros(Int, n)
 visited = falses(n)
 
 function visit(adj, s)
     visited[s] = true
-    clock += 1;  pre[s] = clock          # s first seen
+    pre[s] = clock;  clock += 1          # s first seen
     for v in adj[s]
         if !visited[v]
             visit(adj, v)
         end
     end
-    clock += 1;  post[s] = clock         # s finishes
+    post[s] = clock;  clock += 1         # s finishes
 end
 \end{lstlisting}
 \end{frame}
@@ -792,7 +792,7 @@ end
 
   \bigskip
 \begin{lstlisting}
-time = 0
+time = 1
 
 function visit(adj, s)
     pre[s] = time;  time += 1
@@ -825,22 +825,22 @@ end
         \draw[dedg, mGreen, very thick] (a) -- (c);
         \draw[dedg, mRed, very thick] (c) to[bend right=35] (b);
         \draw[dedg] (d) -- (c);
-        \node[font=\scriptsize, above] at (a.north) {$[0,7]$};
-        \node[font=\scriptsize, above] at (b.north) {$[1,4]$};
-        \node[font=\scriptsize, below] at (c.south) {$[2,3]$};
-        \node[font=\scriptsize, below] at (d.south) {$[5,6]$};
+        \node[font=\scriptsize, above] at (a.north) {$[1,8]$};
+        \node[font=\scriptsize, above] at (b.north) {$[2,5]$};
+        \node[font=\scriptsize, below] at (c.south) {$[3,4]$};
+        \node[font=\scriptsize, below] at (d.south) {$[6,7]$};
       \end{tikzpicture}
       \end{center}
     \end{column}
     \begin{column}{0.55\textwidth}
       \begin{center}
       \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
-        \foreach \t in {0,...,7} {
-          \draw[mGray] (\t*0.8,0.25) -- (\t*0.8,-2.5);
-          \node[font=\scriptsize] at (\t*0.8,0.5) {\t};
+        \foreach \t in {1,...,8} {
+          \draw[mGray] (\t*0.8-0.8,0.25) -- (\t*0.8-0.8,-2.5);
+          \node[font=\scriptsize] at (\t*0.8-0.8,0.5) {\t};
         }
-        \foreach \v/\a/\b/\y in {a/0/7/0, b/1/4/1, c/2/3/2, d/5/6/3} {
-          \fill[mLightBlue!35, draw=mLightBlue] (\a*0.8,-\y*0.6-0.05) rectangle (\b*0.8,-\y*0.6-0.4);
+        \foreach \v/\a/\b/\y in {a/1/8/0, b/2/5/1, c/3/4/2, d/6/7/3} {
+          \fill[mLightBlue!35, draw=mLightBlue] (\a*0.8-0.8,-\y*0.6-0.05) rectangle (\b*0.8-0.8,-\y*0.6-0.4);
           \node[left] at (-0.15,-\y*0.6-0.225) {$\v$};
         }
         \node[font=\scriptsize] at (2.8,0.95) {time};
