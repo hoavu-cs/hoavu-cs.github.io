@@ -160,32 +160,6 @@
   \end{enumerate}
 \end{frame}
 
-\begin{frame}[fragile]{\texttt{heapify}: Code}
-\begin{lstlisting}
-function heapify!(A, i)
-    n = length(A)
-    l = 2i;   r = 2i + 1
-    largest = i
-
-    if l <= n && A[l] > A[largest]
-        largest = l
-    end
-    if r <= n && A[r] > A[largest]
-        largest = r
-    end
-
-    if largest != i
-        A[i], A[largest] = A[largest], A[i]   # swap down
-        heapify!(A, largest)                   # recurse
-    end
-end
-\end{lstlisting}
-
-  \bigskip
-  \textbf{Running time}: height $h = \lfloor \log_2 n \rfloor$,
-  each level $O(1)$ work $\Rightarrow$ $O(\log n)$.
-\end{frame}
-
 \newcommand{\heaptree}[1]{%
   \begin{tikzpicture}[scale=1.0,
     level distance=1.2cm,
@@ -271,6 +245,32 @@ end
       };
   }
   \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{heapify}: Code}
+\begin{lstlisting}
+function heapify!(A, i)
+    n = length(A)
+    l = 2i;   r = 2i + 1
+    largest = i
+
+    if l <= n && A[l] > A[largest]
+        largest = l
+    end
+    if r <= n && A[r] > A[largest]
+        largest = r
+    end
+
+    if largest != i
+        A[i], A[largest] = A[largest], A[i]   # swap down
+        heapify!(A, largest)                   # recurse
+    end
+end
+\end{lstlisting}
+
+  \bigskip
+  \textbf{Running time}: height $h = \lfloor \log_2 n \rfloor$,
+  each level $O(1)$ work $\Rightarrow$ $O(\log n)$.
 \end{frame}
 
 % =========================================================================
