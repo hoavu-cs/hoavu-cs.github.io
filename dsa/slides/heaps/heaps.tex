@@ -186,18 +186,24 @@ end
   each level $O(1)$ work $\Rightarrow$ $O(\log n)$.
 \end{frame}
 
-\begin{frame}{\texttt{heapify} in Action (Step 1)}
-  Call \texttt{heapify!(A, 2)} after $A[2]$ was changed to $4$.
-  Compare $4$ with children $14$ and $7$: swap with $14$.
-
-  \bigskip
-  \begin{center}
-  \begin{tikzpicture}[scale=0.9,
+\newcommand{\heaptree}[1]{%
+  \begin{tikzpicture}[scale=1.0,
     level distance=1.2cm,
     level 1/.style={sibling distance=4.2cm},
     level 2/.style={sibling distance=2.1cm},
     level 3/.style={sibling distance=1.05cm},
     every node/.style={hnode}]
+    #1
+  \end{tikzpicture}%
+}
+
+\begin{frame}{\texttt{heapify} in Action}
+  Call \texttt{heapify!(A, 2)} after $A[2]$ was changed to $4$.
+  Violation: $4 < 14$.
+
+  \bigskip
+  \begin{center}
+  \heaptree{
     \node {16}
       child { node[hswap] {4}
         child { node[hswap] {14}
@@ -213,44 +219,16 @@ end
         child { node {9} }
         child { node {3} }
       };
-  \end{tikzpicture}
-  \hspace{2em}$\xrightarrow{\text{swap}}$\hspace{2em}
-  \begin{tikzpicture}[scale=0.9,
-    level distance=1.2cm,
-    level 1/.style={sibling distance=4.2cm},
-    level 2/.style={sibling distance=2.1cm},
-    level 3/.style={sibling distance=1.05cm},
-    every node/.style={hnode}]
-    \node {16}
-      child { node {14}
-        child { node[hswap] {4}
-          child { node {2} }
-          child { node {8} }
-        }
-        child { node {7}
-          child { node {1} }
-          child[missing] {}
-        }
-      }
-      child { node {10}
-        child { node {9} }
-        child { node {3} }
-      };
-  \end{tikzpicture}
+  }
   \end{center}
 \end{frame}
 
-\begin{frame}{\texttt{heapify} in Action (Step 2)}
-  Now recurse: compare $4$ with children $2$ and $8$: swap with $8$.
+\begin{frame}{\texttt{heapify} in Action}
+  Swap $4 \leftrightarrow 14$. Recurse: violation at new position of $4$, since $4 < 8$.
 
   \bigskip
   \begin{center}
-  \begin{tikzpicture}[scale=0.9,
-    level distance=1.2cm,
-    level 1/.style={sibling distance=4.2cm},
-    level 2/.style={sibling distance=2.1cm},
-    level 3/.style={sibling distance=1.05cm},
-    every node/.style={hnode}]
+  \heaptree{
     \node {16}
       child { node {14}
         child { node[hswap] {4}
@@ -266,14 +244,16 @@ end
         child { node {9} }
         child { node {3} }
       };
-  \end{tikzpicture}
-  \hspace{2em}$\xrightarrow{\text{swap}}$\hspace{2em}
-  \begin{tikzpicture}[scale=0.9,
-    level distance=1.2cm,
-    level 1/.style={sibling distance=4.2cm},
-    level 2/.style={sibling distance=2.1cm},
-    level 3/.style={sibling distance=1.05cm},
-    every node/.style={hnode}]
+  }
+  \end{center}
+\end{frame}
+
+\begin{frame}{\texttt{heapify} in Action}
+  Swap $4 \leftrightarrow 8$. Now $4$ is a leaf — heap property restored.
+
+  \bigskip
+  \begin{center}
+  \heaptree{
     \node {16}
       child { node {14}
         child { node {8}
@@ -289,12 +269,7 @@ end
         child { node {9} }
         child { node {3} }
       };
-  \end{tikzpicture}
-  \end{center}
-
-  \bigskip
-  \begin{center}
-    $4$ has no children to violate the heap property. Done.
+  }
   \end{center}
 \end{frame}
 
