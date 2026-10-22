@@ -10,7 +10,7 @@
 \usepackage{listings}
 \usepackage{booktabs}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, calc}
+\usetikzlibrary{arrows.meta, positioning, calc, trees}
 
 % ---- colors -------------------------------------------------------------
 \definecolor{mLightBlue}{HTML}{4C72B0}
@@ -32,11 +32,22 @@
 }
 \lstset{style=jl}
 
-% ---- tree node style ----------------------------------------------------
+% ---- tree node styles ---------------------------------------------------
 \tikzset{
   hnode/.style={draw, circle, minimum size=8mm, inner sep=0pt, font=\small, fill=mLightBlue!20},
   hswap/.style={hnode, fill=mRed!25},
-  hedge/.style={thick},
+}
+
+% ---- shared tree command ------------------------------------------------
+\newcommand{\heaptree}[1]{%
+  \begin{tikzpicture}[scale=1.0,
+    level distance=1.2cm,
+    level 1/.style={sibling distance=3.6cm},
+    level 2/.style={sibling distance=1.8cm},
+    level 3/.style={sibling distance=0.9cm},
+    every node/.style={hnode}]
+    #1
+  \end{tikzpicture}%
 }
 
 % ---- title --------------------------------------------------------------
@@ -57,27 +68,39 @@
 
   \bigskip
   \begin{columns}[c]
-    \begin{column}{0.48\textwidth}
-      \begin{block}{Max-Heap}
-        Every node's key is $\ge$ the keys of its children.\\
-        \smallskip
-        The \alert{largest} element is at the root.
-      \end{block}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{block}{Min-Heap}
-        Every node's key is $\le$ the keys of its children.\\
-        \smallskip
+    \begin{column}{0.52\textwidth}
+      \begin{block}{Min-Heap Property}
+        For every node $i$ other than the root:
+        \[
+          A[\mathrm{parent}(i)] \le A[i].
+        \]
         The \alert{smallest} element is at the root.
       \end{block}
+
+      \bigskip
+      We focus on \alert{min-heaps} throughout.\\
+      Max-heaps are symmetric (flip $\le$ to $\ge$).
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.9,
+        level distance=1.1cm,
+        level 1/.style={sibling distance=2.8cm},
+        level 2/.style={sibling distance=1.4cm},
+        every node/.style={hnode}]
+        \node {1}
+          child { node {3}
+            child { node {5} }
+            child { node {4} }
+          }
+          child { node {2}
+            child { node {6} }
+            child { node {7} }
+          };
+      \end{tikzpicture}
+      \end{center}
     \end{column}
   \end{columns}
-
-  \bigskip
-  \begin{center}
-    The two variants are symmetric: flip comparisons (or negate all keys).\\
-    We focus on \alert{max-heaps} throughout.
-  \end{center}
 \end{frame}
 
 % =========================================================================
@@ -96,10 +119,10 @@
   \bigskip
   \begin{center}
   \begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
-    \foreach \v [count=\i from 1] in {16,14,10,8,7,9,3,2,4,1} {
+    \foreach \v [count=\i from 1] in {1,3,2,5,4,6,7} {
       \node[draw, minimum size=7.5mm, fill=mLightBlue!20, font=\small]
-        at (\i*0.8-0.4, 0) {\v};
-      \node[font=\scriptsize, mGray] at (\i*0.8-0.4, -0.55) {\i};
+        at (\i*0.9-0.45, 0) {\v};
+      \node[font=\scriptsize, mGray] at (\i*0.9-0.45, -0.55) {\i};
     }
   \end{tikzpicture}
   \end{center}
@@ -112,32 +135,30 @@
 \end{frame}
 
 \begin{frame}{The Tree Behind the Array}
-  $A = [16, 14, 10, 8, 7, 9, 3, 2, 4, 1]$
+  $A = [1,\ 3,\ 2,\ 5,\ 4,\ 6,\ 7]$
 
   \bigskip
   \begin{center}
-  \begin{tikzpicture}[scale=0.9, hedge/.style={thick},
-    level distance=1.1cm,
-    level 1/.style={sibling distance=4.4cm},
-    level 2/.style={sibling distance=2.2cm},
-    level 3/.style={sibling distance=1.1cm},
+  \begin{tikzpicture}[scale=1.0,
+    level distance=1.2cm,
+    level 1/.style={sibling distance=3.8cm},
+    level 2/.style={sibling distance=1.9cm},
     every node/.style={hnode}]
-    \node {16}
-      child { node {14}
-        child { node {8}
-          child { node {2} }
-          child { node {4} }
-        }
-        child { node {7}
-          child { node {1} }
-          child[missing] {}
-        }
+    \node {1}
+      child { node {3}
+        child { node {5} }
+        child { node {4} }
       }
-      child { node {10}
-        child { node {9} }
-        child { node {3} }
+      child { node {2}
+        child { node {6} }
+        child { node {7} }
       };
   \end{tikzpicture}
+  \end{center}
+
+  \bigskip
+  \begin{center}
+    Every parent is $\le$ its children. $\quad$ Root = minimum.
   \end{center}
 \end{frame}
 
@@ -146,7 +167,7 @@
 
 \begin{frame}{The Core Subroutine: \texttt{heapify}}
   \textbf{Assumption}: the subtrees rooted at \texttt{left(i)} and
-  \texttt{right(i)} are valid max-heaps.
+  \texttt{right(i)} are valid min-heaps.
 
   \bigskip
   \textbf{Goal}: fix a possible violation at node $i$ by \alert{floating
@@ -154,94 +175,68 @@
 
   \bigskip
   \begin{enumerate}
-    \item Find the largest among $A[i]$, $A[\text{left}(i)]$, $A[\text{right}(i)]$.
-    \item If $A[i]$ is not the largest, swap it with the largest child.
+    \item Find the smallest among $A[i]$, $A[\mathrm{left}(i)]$, $A[\mathrm{right}(i)]$.
+    \item If $A[i]$ is not the smallest, swap it with the smallest child.
     \item Recurse on the subtree where the swap landed.
   \end{enumerate}
 \end{frame}
 
-\newcommand{\heaptree}[1]{%
-  \begin{tikzpicture}[scale=1.0,
-    level distance=1.2cm,
-    level 1/.style={sibling distance=4.2cm},
-    level 2/.style={sibling distance=2.1cm},
-    level 3/.style={sibling distance=1.05cm},
-    every node/.style={hnode}]
-    #1
-  \end{tikzpicture}%
-}
-
 \begin{frame}{\texttt{heapify} in Action}
-  Call \texttt{heapify!(A, 2)} after $A[2]$ was changed to $4$.
-  Violation: $4 < 14$.
+  Call \texttt{heapify!(A, 1)} after $A[1]$ was changed to $9$.
+  Violation: $9 > 3$ and $9 > 2$.
 
   \bigskip
   \begin{center}
   \heaptree{
-    \node {16}
-      child { node[hswap] {4}
-        child { node[hswap] {14}
-          child { node {2} }
-          child { node {8} }
-        }
-        child { node {7}
-          child { node {1} }
-          child[missing] {}
-        }
+    \node[hswap] {9}
+      child { node[hswap] {2}
+        child { node {5} }
+        child { node {4} }
       }
-      child { node {10}
-        child { node {9} }
-        child { node {3} }
+      child { node {3}
+        child { node {6} }
+        child { node {7} }
       };
   }
   \end{center}
 \end{frame}
 
 \begin{frame}{\texttt{heapify} in Action}
-  Swap $4 \leftrightarrow 14$. Recurse: violation at new position of $4$, since $4 < 8$.
+  Smallest child is $2$: swap $9 \leftrightarrow 2$.
+  Recurse: $9 > 5$ and $9 > 4$, violation at new position.
 
   \bigskip
   \begin{center}
   \heaptree{
-    \node {16}
-      child { node {14}
+    \node {2}
+      child { node[hswap] {9}
         child { node[hswap] {4}
-          child { node {2} }
-          child { node[hswap] {8} }
         }
-        child { node {7}
-          child { node {1} }
-          child[missing] {}
-        }
+        child { node {5} }
       }
-      child { node {10}
-        child { node {9} }
-        child { node {3} }
+      child { node {3}
+        child { node {6} }
+        child { node {7} }
       };
   }
   \end{center}
 \end{frame}
 
 \begin{frame}{\texttt{heapify} in Action}
-  Swap $4 \leftrightarrow 8$. Now $4$ is a leaf — heap property restored.
+  Smallest child is $4$: swap $9 \leftrightarrow 4$.
+  Now $9$ is a leaf — heap property restored.
 
   \bigskip
   \begin{center}
   \heaptree{
-    \node {16}
-      child { node {14}
-        child { node {8}
-          child { node {2} }
-          child { node {4} }
-        }
-        child { node {7}
-          child { node {1} }
-          child[missing] {}
-        }
-      }
-      child { node {10}
+    \node {2}
+      child { node {4}
         child { node {9} }
-        child { node {3} }
+        child { node {5} }
+      }
+      child { node {3}
+        child { node {6} }
+        child { node {7} }
       };
   }
   \end{center}
@@ -252,18 +247,18 @@
 function heapify!(A, i)
     n = length(A)
     l = 2i;   r = 2i + 1
-    largest = i
+    smallest = i
 
-    if l <= n && A[l] > A[largest]
-        largest = l
+    if l <= n && A[l] < A[smallest]
+        smallest = l
     end
-    if r <= n && A[r] > A[largest]
-        largest = r
+    if r <= n && A[r] < A[smallest]
+        smallest = r
     end
 
-    if largest != i
-        A[i], A[largest] = A[largest], A[i]   # swap down
-        heapify!(A, largest)                   # recurse
+    if smallest != i
+        A[i], A[smallest] = A[smallest], A[i]   # swap down
+        heapify!(A, smallest)                    # recurse
     end
 end
 \end{lstlisting}
@@ -304,46 +299,256 @@ end
   \[
     \sum_{h=0}^{\lfloor \log n \rfloor}
     \left\lceil \frac{n}{2^{h+1}} \right\rceil O(h)
-    = O\!\left(n \sum_{h=0}^{\infty} \frac{h}{2^h}\right) = O(n).
+    = O\!\left(n \sum_{h=0}^{\infty} \frac{h}{2^h}\right) = O(n),
   \]
-
-  \bigskip
   using $\displaystyle\sum_{h=0}^{\infty} h\,x^h = \dfrac{x}{(1-x)^2}$ with $x = \tfrac{1}{2}$.
 \end{frame}
 
 % =========================================================================
 \section{Heap Operations}
 
-\begin{frame}[fragile]{Extract-Max}
-  Remove and return the root (the maximum).
+\begin{frame}{Extract-Min}
+  Remove and return the root (the minimum).
 
   \begin{enumerate}
     \item Save \texttt{A[1]}.
     \item Move the \alert{last} element to the root; shrink the array.
     \item Call \texttt{heapify!(A, 1)} to restore the heap.
   \end{enumerate}
+\end{frame}
 
+\begin{frame}{Extract-Min in Action}
+  Starting heap $A = [1,3,2,5,4,6,7]$.
+  Extract $\min = 1$; move last element $7$ to the root.
+
+  \bigskip
+  \begin{columns}[c]
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \textbf{Before}\\[4pt]
+        \begin{tikzpicture}[scale=0.8,
+          level distance=1.1cm,
+          level 1/.style={sibling distance=2.6cm},
+          level 2/.style={sibling distance=1.3cm},
+          every node/.style={hnode}]
+          \node[hswap] {1}
+            child { node {3}
+              child { node {5} }
+              child { node {4} }
+            }
+            child { node {2}
+              child { node {6} }
+              child { node[hswap] {7} }
+            };
+        \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \textbf{After moving 7 to root}\\[4pt]
+        \begin{tikzpicture}[scale=0.8,
+          level distance=1.1cm,
+          level 1/.style={sibling distance=2.6cm},
+          level 2/.style={sibling distance=1.3cm},
+          every node/.style={hnode}]
+          \node[hswap] {7}
+            child { node {3}
+              child { node {5} }
+              child { node {4} }
+            }
+            child { node[hswap] {2}
+              child { node {6} }
+            };
+        \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+  \bigskip
+  \begin{center}
+    Heap size reduced to 6. Now call \texttt{heapify!(A, 1)}.
+  \end{center}
+\end{frame}
+
+\begin{frame}{Extract-Min in Action}
+  Heapify at root: smallest child of $7$ is $\min(3,2)=2$. Swap $7 \leftrightarrow 2$.
+
+  \bigskip
+  \begin{columns}[c]
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \textbf{After swap $7 \leftrightarrow 2$}\\[4pt]
+        \begin{tikzpicture}[scale=0.8,
+          level distance=1.1cm,
+          level 1/.style={sibling distance=2.6cm},
+          level 2/.style={sibling distance=1.3cm},
+          every node/.style={hnode}]
+          \node {2}
+            child { node {3}
+              child { node {5} }
+              child { node {4} }
+            }
+            child { node[hswap] {7}
+              child { node[hswap] {6} }
+            };
+        \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \textbf{After swap $7 \leftrightarrow 6$, done}\\[4pt]
+        \begin{tikzpicture}[scale=0.8,
+          level distance=1.1cm,
+          level 1/.style={sibling distance=2.6cm},
+          level 2/.style={sibling distance=1.3cm},
+          every node/.style={hnode}]
+          \node {2}
+            child { node {3}
+              child { node {5} }
+              child { node {4} }
+            }
+            child { node {6}
+              child { node {7} }
+            };
+        \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+  \bigskip
+  \begin{center}
+    $7$ is a leaf — heap property restored. \quad Result: $A = [2,3,6,5,4,7]$.
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Extract-Min: Code}
 \begin{lstlisting}
-function heap_extract_max!(A)
-    max_val = A[1]
+function heap_extract_min!(A)
+    min_val = A[1]
     A[1] = A[end]
     pop!(A)
     heapify!(A, 1)
-    return max_val
+    return min_val
 end
 \end{lstlisting}
 
   \textbf{Running time}: $O(\log n)$.
 \end{frame}
 
-\begin{frame}[fragile]{Increase-Key}
-  Raise $A[i]$ to \texttt{key} and \alert{bubble up} to restore the heap.
+\begin{frame}{Decrease-Key}
+  Lower $A[i]$ to \texttt{key} and \alert{bubble up} to restore the heap.
 
+  \begin{enumerate}
+    \item If \texttt{key} $>$ \texttt{A[i]}: error (can only decrease).
+    \item Set \texttt{A[i] = key}.
+    \item While \texttt{A[i]} $<$ its parent: swap upward.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Decrease-Key in Action}
+  Heap $A = [2,3,6,5,4,7]$. Decrease $A[6] = 7$ to $1$.
+
+  \bigskip
+  \begin{columns}[c]
+    \begin{column}{0.30\textwidth}
+      \begin{center}
+        \textbf{Original}\\[4pt]
+        \begin{tikzpicture}[scale=0.75,
+          level distance=1.5cm,
+          level 1/.style={sibling distance=2.8cm},
+          level 2/.style={sibling distance=1.5cm},
+          every node/.style={hnode}]
+          \node {2}
+            child { node {3}
+              child { node {5} }
+              child { node {4} }
+            }
+            child { node {6}
+              child { node {7} }
+            };
+        \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.30\textwidth}
+      \begin{center}
+        \textbf{$A[6] \leftarrow 1$ (violation)}\\[4pt]
+        \begin{tikzpicture}[scale=0.75,
+          level distance=1.5cm,
+          level 1/.style={sibling distance=2.8cm},
+          level 2/.style={sibling distance=1.5cm},
+          every node/.style={hnode}]
+          \node {2}
+            child { node {3}
+              child { node {5} }
+              child { node {4} }
+            }
+            child { node[hswap] {6}
+              child { node[hswap] {1} }
+            };
+        \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.30\textwidth}
+      \begin{center}
+        \textbf{Swap $1 \leftrightarrow 6$}\\[4pt]
+        \begin{tikzpicture}[scale=0.75,
+          level distance=1.5cm,
+          level 1/.style={sibling distance=2.8cm},
+          level 2/.style={sibling distance=1.5cm},
+          every node/.style={hnode}]
+          \node[hswap] {2}
+            child { node {3}
+              child { node {5} }
+              child { node {4} }
+            }
+            child { node[hswap] {1}
+              child { node {6} }
+            };
+        \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+  \bigskip
+  \begin{center}
+    $1 < 6$: swap. Then $1 < 2$: swap again.
+  \end{center}
+\end{frame}
+
+\begin{frame}{Decrease-Key in Action}
+  After swap $1 \leftrightarrow 2$: $1$ reaches the root. Heap property restored.
+
+  \bigskip
+  \begin{center}
+    \begin{tikzpicture}[scale=1.0,
+      level distance=1.2cm,
+      level 1/.style={sibling distance=3.0cm},
+      level 2/.style={sibling distance=1.5cm},
+      every node/.style={hnode}]
+      \node {1}
+        child { node {3}
+          child { node {5} }
+          child { node {4} }
+        }
+        child { node {2}
+          child { node {6} }
+        };
+    \end{tikzpicture}
+  \end{center}
+
+  \bigskip
+  \begin{center}
+    Result: $A = [1,3,2,5,4,6]$.
+    The decreased key bubbled up 2 levels.
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Decrease-Key: Code}
 \begin{lstlisting}
-function heap_increase_key!(A, i, key)
-    key < A[i] && error("new key is smaller than current key")
+function heap_decrease_key!(A, i, key)
+    key > A[i] && error("new key is larger than current key")
     A[i] = key
-    while i > 1 && A[div(i, 2)] < A[i]
+    while i > 1 && A[div(i, 2)] > A[i]
         A[i], A[div(i, 2)] = A[div(i, 2)], A[i]
         i = div(i, 2)
     end
@@ -354,12 +559,12 @@ end
 \end{frame}
 
 \begin{frame}[fragile]{Insert}
-  Append $-\infty$ as a sentinel, then increase it to \texttt{key}.
+  Append $+\infty$ as a sentinel, then decrease it to \texttt{key}.
 
 \begin{lstlisting}
-function max_heap_insert!(A, key)
-    push!(A, -Inf)
-    heap_increase_key!(A, length(A), key)
+function min_heap_insert!(A, key)
+    push!(A, Inf)
+    heap_decrease_key!(A, length(A), key)
 end
 \end{lstlisting}
 
@@ -373,8 +578,8 @@ end
     Operation & Time \\
     \midrule
     \texttt{build\_heap} & $O(n)$ \\
-    \texttt{extract\_max} & $O(\log n)$ \\
-    \texttt{increase\_key} & $O(\log n)$ \\
+    \texttt{extract\_min} & $O(\log n)$ \\
+    \texttt{decrease\_key} & $O(\log n)$ \\
     \texttt{insert} & $O(\log n)$ \\
     \bottomrule
   \end{tabular}
@@ -385,16 +590,16 @@ end
 \section{Heapsort}
 
 \begin{frame}[fragile]{Heapsort}
-  Build a max-heap, then repeatedly extract the maximum.
+  Build a min-heap, then repeatedly extract the minimum.
 
 \begin{lstlisting}
 function heapsort(A)
     build_heap!(A)
     sorted = []
     while !isempty(A)
-        push!(sorted, heap_extract_max!(A))
+        push!(sorted, heap_extract_min!(A))
     end
-    return sorted    # sorted in decreasing order
+    return sorted    # sorted in increasing order
 end
 \end{lstlisting}
 \end{frame}
@@ -402,7 +607,7 @@ end
 \begin{frame}{Heapsort Running Time}
   \begin{itemize}
     \item \texttt{build\_heap}: $O(n)$.
-    \item $n$ calls to \texttt{heap\_extract\_max}, each $O(\log n)$: total $O(n \log n)$.
+    \item $n$ calls to \texttt{heap\_extract\_min}, each $O(\log n)$: total $O(n \log n)$.
   \end{itemize}
 
   \bigskip
@@ -413,7 +618,7 @@ end
   \bigskip
   \begin{center}
     \textbf{Exercise}: Trace heapsort on $[3, 1, 4, 1, 5, 9, 2, 6]$.\\
-    Write the heap after each call to \texttt{heap\_extract\_max!}.
+    Write the heap after each call to \texttt{heap\_extract\_min!}.
   \end{center}
 \end{frame}
 
@@ -424,12 +629,12 @@ end
   A \alert{priority queue} is an abstract data type supporting:
   \begin{itemize}
     \item \texttt{insert(key)} — add a new element.
-    \item \texttt{extract\_max()} / \texttt{extract\_min()} — remove and return the highest (or lowest) priority element.
-    \item \texttt{increase\_key} / \texttt{decrease\_key} — update a priority.
+    \item \texttt{extract\_min()} — remove and return the element with lowest priority.
+    \item \texttt{decrease\_key(i, key)} — lower a priority.
   \end{itemize}
 
   \bigskip
-  A heap implements all of these in $O(\log n)$.
+  A min-heap implements all of these in $O(\log n)$.
 
   \bigskip
   \begin{block}{Classic Application: Dijkstra's Algorithm}
@@ -439,9 +644,5 @@ end
   \end{block}
 \end{frame}
 
-% =========================================================================
-\begin{frame}[standout]
-  Questions?
-\end{frame}
 
 \end{document}
