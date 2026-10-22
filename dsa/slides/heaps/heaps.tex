@@ -1,0 +1,435 @@
+% Heaps -- Metropolis beamer slides
+% Compile: pdflatex heaps.tex (x2)
+\documentclass[10pt,aspectratio=169]{beamer}
+
+\usetheme{metropolis}
+\metroset{block=fill, numbering=fraction, progressbar=frametitle}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
+
+% ---- colors -------------------------------------------------------------
+\definecolor{mLightBlue}{HTML}{4C72B0}
+\definecolor{mGreen}{HTML}{55A868}
+\definecolor{mRed}{HTML}{C44E52}
+\definecolor{mGray}{HTML}{BFBFBF}
+\setbeamercolor{alerted text}{fg=mRed}
+
+% ---- code style ---------------------------------------------------------
+\lstdefinestyle{jl}{
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{mRed}\bfseries,
+  commentstyle=\color{mGreen}\itshape,
+  numberstyle=\tiny\color{mGray},
+  showstringspaces=false,
+  breaklines=true,
+  columns=fullflexible,
+  morekeywords={function,for,in,if,else,elseif,end,return,length,while,push,pop,div,error,isempty}
+}
+\lstset{style=jl}
+
+% ---- tree node style ----------------------------------------------------
+\tikzset{
+  hnode/.style={draw, circle, minimum size=8mm, inner sep=0pt, font=\small, fill=mLightBlue!20},
+  hswap/.style={hnode, fill=mRed!25},
+  hedge/.style={thick},
+}
+
+% ---- title --------------------------------------------------------------
+\title{Heaps}
+\subtitle{Data Structures \& Algorithms}
+\date{}
+\author{}
+
+\begin{document}
+
+\maketitle
+
+% =========================================================================
+\section{The Heap Property}
+
+\begin{frame}{What is a Heap?}
+  A \alert{heap} is a nearly complete binary tree satisfying the \alert{heap property}.
+
+  \bigskip
+  \begin{columns}[c]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Max-Heap}
+        Every node's key is $\ge$ the keys of its children.\\
+        \smallskip
+        The \alert{largest} element is at the root.
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Min-Heap}
+        Every node's key is $\le$ the keys of its children.\\
+        \smallskip
+        The \alert{smallest} element is at the root.
+      \end{block}
+    \end{column}
+  \end{columns}
+
+  \bigskip
+  \begin{center}
+    The two variants are symmetric: flip comparisons (or negate all keys).\\
+    We focus on \alert{max-heaps} throughout.
+  \end{center}
+\end{frame}
+
+% =========================================================================
+\section{Array Representation}
+
+\begin{frame}{Storing a Heap in an Array}
+  A heap on $n$ elements is stored in an array $A[1:n]$.
+  The tree structure is \alert{implicit}:
+  \[
+    \mathrm{parent}(i) = \lfloor i/2 \rfloor, \qquad
+    \mathrm{left}(i)   = 2i, \qquad
+    \mathrm{right}(i)  = 2i+1.
+  \]
+
+  \pause
+  \bigskip
+  \begin{center}
+  \begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
+    \foreach \v [count=\i from 1] in {16,14,10,8,7,9,3,2,4,1} {
+      \node[draw, minimum size=7.5mm, fill=mLightBlue!20, font=\small]
+        at (\i*0.8-0.4, 0) {\v};
+      \node[font=\scriptsize, mGray] at (\i*0.8-0.4, -0.55) {\i};
+    }
+  \end{tikzpicture}
+  \end{center}
+
+  \bigskip
+  \begin{center}
+    \alert{Leaves} are at positions $\lfloor n/2 \rfloor + 1, \ldots, n$
+    (no child index fits in the array).
+  \end{center}
+\end{frame}
+
+\begin{frame}{The Tree Behind the Array}
+  $A = [16, 14, 10, 8, 7, 9, 3, 2, 4, 1]$
+
+  \bigskip
+  \begin{center}
+  \begin{tikzpicture}[scale=0.9, hedge/.style={thick},
+    level distance=1.1cm,
+    level 1/.style={sibling distance=4.4cm},
+    level 2/.style={sibling distance=2.2cm},
+    level 3/.style={sibling distance=1.1cm},
+    every node/.style={hnode}]
+    \node {16}
+      child { node {14}
+        child { node {8}
+          child { node {2} }
+          child { node {4} }
+        }
+        child { node {7}
+          child { node {1} }
+          child[missing] {}
+        }
+      }
+      child { node {10}
+        child { node {9} }
+        child { node {3} }
+      };
+  \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+% =========================================================================
+\section{Heapify}
+
+\begin{frame}{The Core Subroutine: \texttt{heapify}}
+  \textbf{Assumption}: the subtrees rooted at \texttt{left(i)} and
+  \texttt{right(i)} are valid max-heaps.
+
+  \bigskip
+  \textbf{Goal}: fix a possible violation at node $i$ by \alert{floating
+  $A[i]$ downward}.
+
+  \bigskip
+  \begin{enumerate}
+    \item Find the largest among $A[i]$, $A[\text{left}(i)]$, $A[\text{right}(i)]$.
+    \item If $A[i]$ is not the largest, swap it with the largest child.
+    \item Recurse on the subtree where the swap landed.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{heapify}: Code}
+\begin{lstlisting}
+function heapify!(A, i)
+    n = length(A)
+    l = 2i;   r = 2i + 1
+    largest = i
+
+    if l <= n && A[l] > A[largest]
+        largest = l
+    end
+    if r <= n && A[r] > A[largest]
+        largest = r
+    end
+
+    if largest != i
+        A[i], A[largest] = A[largest], A[i]   # swap down
+        heapify!(A, largest)                   # recurse
+    end
+end
+\end{lstlisting}
+
+  \bigskip
+  \textbf{Running time}: height $h = \lfloor \log_2 n \rfloor$,
+  each level $O(1)$ work $\Rightarrow$ $O(\log n)$.
+\end{frame}
+
+\begin{frame}{\texttt{heapify} in Action}
+  Call \texttt{heapify!(A, 2)} after $A[2]$ was changed to $4$.
+
+  \begin{center}
+  \begin{tikzpicture}[scale=0.85,
+    level distance=1.1cm,
+    level 1/.style={sibling distance=4.0cm},
+    level 2/.style={sibling distance=2.0cm},
+    level 3/.style={sibling distance=1.0cm},
+    every node/.style={hnode}]
+    \node {16}
+      child { node[hswap] (bad) {4}
+        child { node[hswap] (l2) {14}
+          child { node {2} }
+          child { node {8} }
+        }
+        child { node {7}
+          child { node {1} }
+          child[missing] {}
+        }
+      }
+      child { node {10}
+        child { node {9} }
+        child { node {3} }
+      };
+  \end{tikzpicture}
+  \hspace{1em}$\xrightarrow{\text{swap}}$\hspace{1em}
+  \begin{tikzpicture}[scale=0.85,
+    level distance=1.1cm,
+    level 1/.style={sibling distance=4.0cm},
+    level 2/.style={sibling distance=2.0cm},
+    level 3/.style={sibling distance=1.0cm},
+    every node/.style={hnode}]
+    \node {16}
+      child { node {14}
+        child { node[hswap] {4}
+          child { node {2} }
+          child { node {8} }
+        }
+        child { node {7}
+          child { node {1} }
+          child[missing] {}
+        }
+      }
+      child { node {10}
+        child { node {9} }
+        child { node {3} }
+      };
+  \end{tikzpicture}
+  \hspace{1em}$\xrightarrow{\text{swap}}$\hspace{1em}
+  \begin{tikzpicture}[scale=0.85,
+    level distance=1.1cm,
+    level 1/.style={sibling distance=4.0cm},
+    level 2/.style={sibling distance=2.0cm},
+    level 3/.style={sibling distance=1.0cm},
+    every node/.style={hnode}]
+    \node {16}
+      child { node {14}
+        child { node {8}
+          child { node {2} }
+          child { node {4} }
+        }
+        child { node {7}
+          child { node {1} }
+          child[missing] {}
+        }
+      }
+      child { node {10}
+        child { node {9} }
+        child { node {3} }
+      };
+  \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+% =========================================================================
+\section{Building a Heap}
+
+\begin{frame}[fragile]{Building a Heap from Scratch}
+  Call \texttt{heapify} bottom-up on every \alert{internal} node
+  (leaves already satisfy the property).
+
+\begin{lstlisting}
+function build_heap!(A)
+    for i in div(length(A), 2):-1:1
+        heapify!(A, i)
+    end
+end
+\end{lstlisting}
+
+  \bigskip
+  \begin{center}
+    Start at $\lfloor n/2 \rfloor$ and work down to $1$.
+  \end{center}
+\end{frame}
+
+\begin{frame}{Why \texttt{build\_heap} is $O(n)$}
+  Naively: $O(n/2)$ calls each costing $O(\log n)$ $\Rightarrow$ $O(n \log n)$.
+
+  \bigskip
+  But nodes near the leaves do \alert{little work}.
+  There are $\approx n/2^{h+1}$ nodes at height $h$, and \texttt{heapify}
+  at height $h$ costs $O(h)$:
+  \[
+    \sum_{h=0}^{\lfloor \log n \rfloor}
+    \left\lceil \frac{n}{2^{h+1}} \right\rceil O(h)
+    = O\!\left(n \sum_{h=0}^{\infty} \frac{h}{2^h}\right) = O(n).
+  \]
+
+  \bigskip
+  using $\displaystyle\sum_{h=0}^{\infty} h\,x^h = \dfrac{x}{(1-x)^2}$ with $x = \tfrac{1}{2}$.
+\end{frame}
+
+% =========================================================================
+\section{Heap Operations}
+
+\begin{frame}[fragile]{Extract-Max}
+  Remove and return the root (the maximum).
+
+  \begin{enumerate}
+    \item Save \texttt{A[1]}.
+    \item Move the \alert{last} element to the root; shrink the array.
+    \item Call \texttt{heapify!(A, 1)} to restore the heap.
+  \end{enumerate}
+
+\begin{lstlisting}
+function heap_extract_max!(A)
+    max_val = A[1]
+    A[1] = A[end]
+    pop!(A)
+    heapify!(A, 1)
+    return max_val
+end
+\end{lstlisting}
+
+  \textbf{Running time}: $O(\log n)$.
+\end{frame}
+
+\begin{frame}[fragile]{Increase-Key}
+  Raise $A[i]$ to \texttt{key} and \alert{bubble up} to restore the heap.
+
+\begin{lstlisting}
+function heap_increase_key!(A, i, key)
+    key < A[i] && error("new key is smaller than current key")
+    A[i] = key
+    while i > 1 && A[div(i, 2)] < A[i]
+        A[i], A[div(i, 2)] = A[div(i, 2)], A[i]
+        i = div(i, 2)
+    end
+end
+\end{lstlisting}
+
+  \textbf{Running time}: node travels at most $O(\log n)$ levels upward $\Rightarrow$ $O(\log n)$.
+\end{frame}
+
+\begin{frame}[fragile]{Insert}
+  Append $-\infty$ as a sentinel, then increase it to \texttt{key}.
+
+\begin{lstlisting}
+function max_heap_insert!(A, key)
+    push!(A, -Inf)
+    heap_increase_key!(A, length(A), key)
+end
+\end{lstlisting}
+
+  \bigskip
+  \textbf{Running time}: $O(\log n)$.
+
+  \bigskip
+  \begin{center}
+  \begin{tabular}{lc}
+    \toprule
+    Operation & Time \\
+    \midrule
+    \texttt{build\_heap} & $O(n)$ \\
+    \texttt{extract\_max} & $O(\log n)$ \\
+    \texttt{increase\_key} & $O(\log n)$ \\
+    \texttt{insert} & $O(\log n)$ \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+\end{frame}
+
+% =========================================================================
+\section{Heapsort}
+
+\begin{frame}[fragile]{Heapsort}
+  Build a max-heap, then repeatedly extract the maximum.
+
+\begin{lstlisting}
+function heapsort(A)
+    build_heap!(A)
+    sorted = []
+    while !isempty(A)
+        push!(sorted, heap_extract_max!(A))
+    end
+    return sorted    # sorted in decreasing order
+end
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Heapsort Running Time}
+  \begin{itemize}
+    \item \texttt{build\_heap}: $O(n)$.
+    \item $n$ calls to \texttt{heap\_extract\_max}, each $O(\log n)$: total $O(n \log n)$.
+  \end{itemize}
+
+  \bigskip
+  \begin{alertblock}{Total: $O(n \log n)$}
+    In-place with $O(1)$ extra space (when implemented directly in the array).
+  \end{alertblock}
+
+  \bigskip
+  \begin{center}
+    \textbf{Exercise}: Trace heapsort on $[3, 1, 4, 1, 5, 9, 2, 6]$.\\
+    Write the heap after each call to \texttt{heap\_extract\_max!}.
+  \end{center}
+\end{frame}
+
+% =========================================================================
+\section{Priority Queues}
+
+\begin{frame}{Priority Queue}
+  A \alert{priority queue} is an abstract data type supporting:
+  \begin{itemize}
+    \item \texttt{insert(key)} — add a new element.
+    \item \texttt{extract\_max()} / \texttt{extract\_min()} — remove and return the highest (or lowest) priority element.
+    \item \texttt{increase\_key} / \texttt{decrease\_key} — update a priority.
+  \end{itemize}
+
+  \bigskip
+  A heap implements all of these in $O(\log n)$.
+
+  \bigskip
+  \begin{block}{Classic Application: Dijkstra's Algorithm}
+    A \alert{min-heap} stores vertices ordered by tentative distance.
+    Each step extracts the closest unvisited vertex in $O(\log n)$
+    and updates neighbours in $O(\log n)$.
+  \end{block}
+\end{frame}
+
+% =========================================================================
+\begin{frame}[standout]
+  Questions?
+\end{frame}
+
+\end{document}
