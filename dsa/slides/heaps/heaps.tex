@@ -186,19 +186,21 @@ end
   each level $O(1)$ work $\Rightarrow$ $O(\log n)$.
 \end{frame}
 
-\begin{frame}{\texttt{heapify} in Action}
+\begin{frame}{\texttt{heapify} in Action (Step 1)}
   Call \texttt{heapify!(A, 2)} after $A[2]$ was changed to $4$.
+  Compare $4$ with children $14$ and $7$: swap with $14$.
 
+  \bigskip
   \begin{center}
-  \begin{tikzpicture}[scale=0.85,
-    level distance=1.1cm,
-    level 1/.style={sibling distance=4.0cm},
-    level 2/.style={sibling distance=2.0cm},
-    level 3/.style={sibling distance=1.0cm},
+  \begin{tikzpicture}[scale=0.9,
+    level distance=1.2cm,
+    level 1/.style={sibling distance=4.2cm},
+    level 2/.style={sibling distance=2.1cm},
+    level 3/.style={sibling distance=1.05cm},
     every node/.style={hnode}]
     \node {16}
-      child { node[hswap] (bad) {4}
-        child { node[hswap] (l2) {14}
+      child { node[hswap] {4}
+        child { node[hswap] {14}
           child { node {2} }
           child { node {8} }
         }
@@ -212,12 +214,12 @@ end
         child { node {3} }
       };
   \end{tikzpicture}
-  \hspace{1em}$\xrightarrow{\text{swap}}$\hspace{1em}
-  \begin{tikzpicture}[scale=0.85,
-    level distance=1.1cm,
-    level 1/.style={sibling distance=4.0cm},
-    level 2/.style={sibling distance=2.0cm},
-    level 3/.style={sibling distance=1.0cm},
+  \hspace{2em}$\xrightarrow{\text{swap}}$\hspace{2em}
+  \begin{tikzpicture}[scale=0.9,
+    level distance=1.2cm,
+    level 1/.style={sibling distance=4.2cm},
+    level 2/.style={sibling distance=2.1cm},
+    level 3/.style={sibling distance=1.05cm},
     every node/.style={hnode}]
     \node {16}
       child { node {14}
@@ -235,12 +237,42 @@ end
         child { node {3} }
       };
   \end{tikzpicture}
-  \hspace{1em}$\xrightarrow{\text{swap}}$\hspace{1em}
-  \begin{tikzpicture}[scale=0.85,
-    level distance=1.1cm,
-    level 1/.style={sibling distance=4.0cm},
-    level 2/.style={sibling distance=2.0cm},
-    level 3/.style={sibling distance=1.0cm},
+  \end{center}
+\end{frame}
+
+\begin{frame}{\texttt{heapify} in Action (Step 2)}
+  Now recurse: compare $4$ with children $2$ and $8$: swap with $8$.
+
+  \bigskip
+  \begin{center}
+  \begin{tikzpicture}[scale=0.9,
+    level distance=1.2cm,
+    level 1/.style={sibling distance=4.2cm},
+    level 2/.style={sibling distance=2.1cm},
+    level 3/.style={sibling distance=1.05cm},
+    every node/.style={hnode}]
+    \node {16}
+      child { node {14}
+        child { node[hswap] {4}
+          child { node {2} }
+          child { node[hswap] {8} }
+        }
+        child { node {7}
+          child { node {1} }
+          child[missing] {}
+        }
+      }
+      child { node {10}
+        child { node {9} }
+        child { node {3} }
+      };
+  \end{tikzpicture}
+  \hspace{2em}$\xrightarrow{\text{swap}}$\hspace{2em}
+  \begin{tikzpicture}[scale=0.9,
+    level distance=1.2cm,
+    level 1/.style={sibling distance=4.2cm},
+    level 2/.style={sibling distance=2.1cm},
+    level 3/.style={sibling distance=1.05cm},
     every node/.style={hnode}]
     \node {16}
       child { node {14}
@@ -258,6 +290,11 @@ end
         child { node {3} }
       };
   \end{tikzpicture}
+  \end{center}
+
+  \bigskip
+  \begin{center}
+    $4$ has no children to violate the heap property. Done.
   \end{center}
 \end{frame}
 
