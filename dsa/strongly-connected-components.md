@@ -8,6 +8,8 @@ permalink: /dsa/strongly-connected-components/
 
 # Strongly Connected Components (SCC)
 
+[Lecture slides (PDF)](/dsa/slides/strongly-connected-components/strongly-connected-components.pdf)
+
 A **strongly connected component (SCC)** of a directed graph is a maximal set of vertices $S \subseteq V$ such that for every pair of vertices $u, v \in S$, there is a directed path from $u$ to $v$ and from $v$ to $u$.
 
 We want to compute these **strongly connected components** of a directed graph.
