@@ -8,6 +8,8 @@ permalink: /dsa/bfs/
 
 # Breadth-First Search (BFS)
 
+[Lecture slides (PDF)](/dsa/slides/shortest-paths/shortest-paths.pdf)
+
 **Breadth-First Search (BFS)** is a graph traversal algorithm that explores vertices level by level, starting from a source vertex. It visits all vertices at distance $d$ before visiting any vertex at distance $d+1$.
 
 BFS is particularly useful for finding shortest paths in **unweighted** graphs, where all edges have equal weight.

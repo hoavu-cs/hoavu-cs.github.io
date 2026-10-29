@@ -8,6 +8,8 @@ permalink: /dsa/bellman-ford/
 
 # Bellman-Ford Algorithm
 
+[Lecture slides (PDF)](/dsa/slides/shortest-paths/shortest-paths.pdf)
+
 Dijkstra's algorithm fails when the graph contains **negative-weight edges**: once a vertex is finalised, a later negative-cost shortcut could still improve its distance, but Dijkstra never revisits finalised vertices.
 
 In general, we might run into a **negative cycle** — a cycle where continuously looping through it reduces the total path length without bound.

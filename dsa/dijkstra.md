@@ -8,6 +8,8 @@ permalink: /dsa/dijkstra/
 
 # Dijkstra's Algorithm
 
+[Lecture slides (PDF)](/dsa/slides/shortest-paths/shortest-paths.pdf)
+
 BFS finds shortest paths in unweighted graphs. When edges have weights, we need a generalisation. **Dijkstra's algorithm** finds shortest paths from a source vertex in a weighted directed graph with **non-negative** edge weights.
 
 The algorithm maintains a tentative distance `dist[v]` for each vertex, initialized to $\infty$ for all vertices except the source, which is $0$. It repeatedly picks the vertex with the smallest tentative distance, finalises it, and propagates its distance to neighbours.
