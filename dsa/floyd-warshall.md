@@ -8,6 +8,8 @@ permalink: /dsa/floyd-warshall/
 
 # Floyd-Warshall Algorithm
 
+[Lecture slides (PDF)](/dsa/slides/floyd-warshall/floyd-warshall.pdf)
+
 Dijkstra and Bellman-Ford compute shortest paths from a **single source**. The **Floyd-Warshall algorithm** solves the **all-pairs shortest paths** problem: it finds the shortest distance between every pair of vertices in $O(n^3)$ time using dynamic programming.
 
 It handles negative-weight edges but, like Bellman-Ford, assumes no negative-weight cycles. A negative cycle is detected if any diagonal entry $D[i][i]$ becomes negative after the algorithm finishes.
