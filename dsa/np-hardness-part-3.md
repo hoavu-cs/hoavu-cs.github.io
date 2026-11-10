@@ -8,6 +8,8 @@ permalink: /dsa/np-hardness-part-3/
 
 # NP-Hardness Part 3 (Clique, Vertex Cover)
 
+[Lecture slides (PDF)](/dsa/slides/np-hardness-part-3/np-hardness-part-3.pdf)
+
 <div class="sectionlecturebox">
 Clique
 </div>

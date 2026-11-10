@@ -8,6 +8,8 @@ permalink: /dsa/np-hardness-part-1/
 
 # NP-Hardness Part 1 (Decision Problems, P, Reductions, NP)
 
+[Lecture slides (PDF)](/dsa/slides/np-hardness-part-1/np-hardness-part-1.pdf)
+
 <div class="sectionlecturebox">
 Decision Problems
 </div>

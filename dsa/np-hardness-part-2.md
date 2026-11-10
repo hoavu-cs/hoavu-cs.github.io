@@ -8,6 +8,8 @@ permalink: /dsa/np-hardness-part-2/
 
 # NP-Hardness Part 2 (NP-Hard, NP-Complete, SAT, Cook-Levin, Reductions)
 
+[Lecture slides (PDF)](/dsa/slides/np-hardness-part-2/np-hardness-part-2.pdf)
+
 <div class="sectionlecturebox">
 NP-Hard
 </div>
