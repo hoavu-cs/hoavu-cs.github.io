@@ -334,33 +334,37 @@
 \end{frame}
 
 \begin{frame}{Step 1: One Vertex per Literal, Triangle per Clause}
-  $\phi = (x_1 \lor x_2 \lor \neg x_3) \land (\neg x_1 \lor x_2 \lor x_3)
-         \land (x_1 \lor \neg x_2 \lor x_3)$, \quad $k = 3$.
+  $\phi = (a \lor b \lor c) \land (b \lor \neg c \lor \neg d)
+         \land (\neg a \lor c \lor d) \land (a \lor \neg b \lor \neg d)$.
+
+  Set $k = $ \alert{number of clauses} $= m$ (here $k = 4$).
 
   For each clause, create one vertex per literal and connect them in a
   \alert{triangle}. An independent set picks \alert{at most one} vertex per
   triangle.
 
   \begin{center}
-  \begin{tikzpicture}[scale=0.74, every node/.append style={transform shape}]
-    % C1
-    \node[lit] (x1a)  at (0,1.3)  {$x_1$};
-    \node[lit] (x2a)  at (-1,0)   {$x_2$};
-    \node[lit] (nx3a) at (1,0)    {$\neg x_3$};
-    \draw[edg] (x1a) -- (x2a) -- (nx3a) -- (x1a);
-    \node at (-1.2,1.1) {$C_1$};
-    % C2
-    \node[lit] (nx1b) at (4,4.1)  {$\neg x_1$};
-    \node[lit] (x2b)  at (3,2.8)  {$x_2$};
-    \node[lit] (x3b)  at (5,2.8)  {$x_3$};
-    \draw[edg] (nx1b) -- (x2b) -- (x3b) -- (nx1b);
-    \node at (4,2.05) {$C_2$};
-    % C3
-    \node[lit] (x1c)  at (8,1.3)  {$x_1$};
-    \node[lit] (nx2c) at (7,0)    {$\neg x_2$};
-    \node[lit] (x3c)  at (9,0)    {$x_3$};
-    \draw[edg] (x1c) -- (nx2c) -- (x3c) -- (x1c);
-    \node at (9.2,1.1) {$C_3$};
+  \begin{tikzpicture}[scale=0.70, every node/.append style={transform shape}]
+    \node[lit] (aa)  at (1,1.8)  {$a$};
+    \node[lit] (ba)  at (0,0)    {$b$};
+    \node[lit] (ca)  at (2,0)    {$c$};
+    \draw[edg] (aa) -- (ba) -- (ca) -- (aa);
+    \node at (-0.7,0.9) {$C_1$};
+    \node[lit] (ndb) at (1,3.8)  {$\neg d$};
+    \node[lit] (bb)  at (0,5.5)  {$b$};
+    \node[lit] (ncc) at (2,5.5)  {$\neg c$};
+    \draw[edg] (ndb) -- (bb) -- (ncc) -- (ndb);
+    \node at (-0.7,4.6) {$C_2$};
+    \node[lit] (nac) at (8,5.5)  {$\neg a$};
+    \node[lit] (cc)  at (10,5.5) {$c$};
+    \node[lit] (dc)  at (9,3.8)  {$d$};
+    \draw[edg] (nac) -- (cc) -- (dc) -- (nac);
+    \node at (10.7,4.6) {$C_3$};
+    \node[lit] (ad)  at (9,1.8)  {$a$};
+    \node[lit] (nbd) at (8,0)    {$\neg b$};
+    \node[lit] (ndd) at (10,0)   {$\neg d$};
+    \draw[edg] (ad) -- (nbd) -- (ndd) -- (ad);
+    \node at (10.7,0.9) {$C_4$};
   \end{tikzpicture}
   \end{center}
 \end{frame}
@@ -368,40 +372,43 @@
 \begin{frame}{Step 2: Conflict Edges Between Complementary Literals}
   Add a \alert{conflict edge} between every pair of vertices in
   \emph{different} triangles whose literals are complementary
-  ($x_r$ and $\neg x_r$). An independent set can never pick both.
+  ($\ell$ and $\neg \ell$). An independent set can never pick both.
 
   \begin{center}
-  \begin{tikzpicture}[scale=0.74, every node/.append style={transform shape}]
-    % C1
-    \node[lit, onslide=<2->{pick}] (x1a)  at (0,1.3)  {$x_1$};
-    \node[lit] (x2a)  at (-1,0)   {$x_2$};
-    \node[lit] (nx3a) at (1,0)    {$\neg x_3$};
-    \draw[edg] (x1a) -- (x2a) -- (nx3a) -- (x1a);
-    \node at (-1.2,1.1) {$C_1$};
-    % C2
-    \node[lit] (nx1b) at (4,4.1)  {$\neg x_1$};
-    \node[lit, onslide=<2->{pick}] (x2b)  at (3,2.8)  {$x_2$};
-    \node[lit] (x3b)  at (5,2.8)  {$x_3$};
-    \draw[edg] (nx1b) -- (x2b) -- (x3b) -- (nx1b);
-    \node at (4,2.05) {$C_2$};
-    % C3
-    \node[lit] (x1c)  at (8,1.3)  {$x_1$};
-    \node[lit] (nx2c) at (7,0)    {$\neg x_2$};
-    \node[lit, onslide=<2->{pick}] (x3c)  at (9,0)    {$x_3$};
-    \draw[edg] (x1c) -- (nx2c) -- (x3c) -- (x1c);
-    \node at (9.2,1.1) {$C_3$};
-    % conflicts
-    \draw[conf] (x1a)  to[bend left=15]  (nx1b);
-    \draw[conf] (x1c)  to[bend right=15] (nx1b);
-    \draw[conf] (x3b)  to[bend right=15] (nx3a);
-    \draw[conf] (x2b)  to[bend right=25] (nx2c);
-    \draw[conf] (x2a)  to[bend right=30] (nx2c);
-    \draw[conf] (nx3a) to[bend right=28] (x3c);
+  \begin{tikzpicture}[scale=0.70, every node/.append style={transform shape}]
+    \node[lit, onslide=<2->{pick}] (aa)  at (1,1.8)  {$a$};
+    \node[lit] (ba)  at (0,0)    {$b$};
+    \node[lit] (ca)  at (2,0)    {$c$};
+    \draw[edg] (aa) -- (ba) -- (ca) -- (aa);
+    \node at (-0.7,0.9) {$C_1$};
+    \node[lit, onslide=<2->{pick}] (ndb) at (1,3.8)  {$\neg d$};
+    \node[lit] (bb)  at (0,5.5)  {$b$};
+    \node[lit] (ncc) at (2,5.5)  {$\neg c$};
+    \draw[edg] (ndb) -- (bb) -- (ncc) -- (ndb);
+    \node at (-0.7,4.6) {$C_2$};
+    \node[lit] (nac) at (8,5.5)  {$\neg a$};
+    \node[lit, onslide=<2->{pick}] (cc)  at (10,5.5) {$c$};
+    \node[lit] (dc)  at (9,3.8)  {$d$};
+    \draw[edg] (nac) -- (cc) -- (dc) -- (nac);
+    \node at (10.7,4.6) {$C_3$};
+    \node[lit, onslide=<2->{pick}] (ad)  at (9,1.8)  {$a$};
+    \node[lit] (nbd) at (8,0)    {$\neg b$};
+    \node[lit] (ndd) at (10,0)   {$\neg d$};
+    \draw[edg] (ad) -- (nbd) -- (ndd) -- (ad);
+    \node at (10.7,0.9) {$C_4$};
+    \draw[conf] (aa)  -- (nac);
+    \draw[conf] (ad)  to[bend left=10]  (nac);
+    \draw[conf] (ba)  to[bend right=15] (nbd);
+    \draw[conf] (bb)  to[bend right=12] (nbd);
+    \draw[conf] (ca)  to[bend left=20]  (ncc);
+    \draw[conf] (cc)  to[bend left=15]  (ncc);
+    \draw[conf] (dc)  to[bend left=10]  (ndb);
+    \draw[conf] (dc)  to[bend right=15] (ndd);
   \end{tikzpicture}
   \end{center}
 
-  \small \onslide<2->{$x_1 = x_2 = x_3 = \mathrm{T}$: one true literal per
-  clause gives an independent set of size $3$ (orange).}
+  \small \onslide<2->{$a{=}\mathrm{T},\; c{=}\mathrm{T},\; d{=}\mathrm{F}$:
+  one true literal per clause gives an independent set of size $4$ (orange).}
 \end{frame}
 
 \begin{frame}{Correctness ($\Rightarrow$)}
@@ -413,37 +420,46 @@
       vertex; call the set $S$.
       \begin{itemize}
         \item $|S| = k$, one per triangle, so no triangle edge is inside $S$.
-        \item A conflict edge inside $S$ would mean $x_r$ and $\neg x_r$ are
+        \item A conflict edge inside $S$ would mean $\ell$ and $\neg\ell$ are
               both true. Impossible.
       \end{itemize}
+      \smallskip
+      \small $a{=}\mathrm{T},\; c{=}\mathrm{T},\; d{=}\mathrm{F}$: pick $a$
+      from $C_1$, $\neg d$ from $C_2$, $c$ from $C_3$, $a$ from $C_4$.
     \end{column}
     \begin{column}{0.48\textwidth}
       \begin{center}
-      \begin{tikzpicture}[scale=0.62, every node/.append style={transform shape}]
-        \node[pick] (x1a)  at (0,1.3)  {$x_1$};
-        \node[lit] (x2a)  at (-1,0)   {$x_2$};
-        \node[lit] (nx3a) at (1,0)    {$\neg x_3$};
-        \draw[edg] (x1a) -- (x2a) -- (nx3a) -- (x1a);
-        \node[font=\scriptsize] at (-1.1,1.0) {$C_1$};
-        \node[lit] (nx1b) at (4,4.1)  {$\neg x_1$};
-        \node[pick] (x2b)  at (3,2.8)  {$x_2$};
-        \node[lit] (x3b)  at (5,2.8)  {$x_3$};
-        \draw[edg] (nx1b) -- (x2b) -- (x3b) -- (nx1b);
-        \node[font=\scriptsize] at (4,2.05) {$C_2$};
-        \node[lit] (x1c)  at (8,1.3)  {$x_1$};
-        \node[lit] (nx2c) at (7,0)    {$\neg x_2$};
-        \node[pick] (x3c)  at (9,0)    {$x_3$};
-        \draw[edg] (x1c) -- (nx2c) -- (x3c) -- (x1c);
-        \node[font=\scriptsize] at (9.1,1.0) {$C_3$};
-        \draw[conf] (x1a)  to[bend left=15]  (nx1b);
-        \draw[conf] (x1c)  to[bend right=15] (nx1b);
-        \draw[conf] (x3b)  to[bend right=15] (nx3a);
-        \draw[conf] (x2b)  to[bend right=25] (nx2c);
-        \draw[conf] (x2a)  to[bend right=30] (nx2c);
-        \draw[conf] (nx3a) to[bend right=28] (x3c);
+      \begin{tikzpicture}[scale=0.43, every node/.append style={transform shape}]
+        \node[pick]  (aa)  at (1,1.8)  {$a$};
+        \node[lit]   (ba)  at (0,0)    {$b$};
+        \node[lit]   (ca)  at (2,0)    {$c$};
+        \draw[edg] (aa) -- (ba) -- (ca) -- (aa);
+        \node[font=\scriptsize] at (-0.7,0.9) {$C_1$};
+        \node[pick]  (ndb) at (1,3.8)  {$\neg d$};
+        \node[lit]   (bb)  at (0,5.5)  {$b$};
+        \node[lit]   (ncc) at (2,5.5)  {$\neg c$};
+        \draw[edg] (ndb) -- (bb) -- (ncc) -- (ndb);
+        \node[font=\scriptsize] at (-0.7,4.6) {$C_2$};
+        \node[lit]   (nac) at (8,5.5)  {$\neg a$};
+        \node[pick]  (cc)  at (10,5.5) {$c$};
+        \node[lit]   (dc)  at (9,3.8)  {$d$};
+        \draw[edg] (nac) -- (cc) -- (dc) -- (nac);
+        \node[font=\scriptsize] at (10.7,4.6) {$C_3$};
+        \node[pick]  (ad)  at (9,1.8)  {$a$};
+        \node[lit]   (nbd) at (8,0)    {$\neg b$};
+        \node[lit]   (ndd) at (10,0)   {$\neg d$};
+        \draw[edg] (ad) -- (nbd) -- (ndd) -- (ad);
+        \node[font=\scriptsize] at (10.7,0.9) {$C_4$};
+        \draw[conf] (aa)  -- (nac);
+        \draw[conf] (ad)  to[bend left=10]  (nac);
+        \draw[conf] (ba)  to[bend right=15] (nbd);
+        \draw[conf] (bb)  to[bend right=12] (nbd);
+        \draw[conf] (ca)  to[bend left=20]  (ncc);
+        \draw[conf] (cc)  to[bend left=15]  (ncc);
+        \draw[conf] (dc)  to[bend left=10]  (ndb);
+        \draw[conf] (dc)  to[bend right=15] (ndd);
       \end{tikzpicture}
       \end{center}
-      \small $x_1{=}x_2{=}x_3{=}\mathrm{T}$: orange = independent set of size 3.
     \end{column}
   \end{columns}
 \end{frame}
@@ -458,7 +474,7 @@
         \item Each triangle holds at most one vertex of $S$, and there are $k$
               triangles: exactly one per triangle.
         \item Make every literal in $S$ true. Consistent: $S$ has no conflict
-              edge, so it never contains both $x_r$ and $\neg x_r$.
+              edge, so it never contains both $\ell$ and $\neg \ell$.
               Set remaining variables arbitrarily.
         \item Each clause contains the true literal chosen from its triangle.
               \hfill $\square$
@@ -466,28 +482,35 @@
     \end{column}
     \begin{column}{0.48\textwidth}
       \begin{center}
-      \begin{tikzpicture}[scale=0.62, every node/.append style={transform shape}]
-        \node[pick] (x1a)  at (0,1.3)  {$x_1$};
-        \node[lit] (x2a)  at (-1,0)   {$x_2$};
-        \node[lit] (nx3a) at (1,0)    {$\neg x_3$};
-        \draw[edg] (x1a) -- (x2a) -- (nx3a) -- (x1a);
-        \node[font=\scriptsize] at (-1.1,1.0) {$C_1$};
-        \node[lit] (nx1b) at (4,4.1)  {$\neg x_1$};
-        \node[pick] (x2b)  at (3,2.8)  {$x_2$};
-        \node[lit] (x3b)  at (5,2.8)  {$x_3$};
-        \draw[edg] (nx1b) -- (x2b) -- (x3b) -- (nx1b);
-        \node[font=\scriptsize] at (4,2.05) {$C_2$};
-        \node[lit] (x1c)  at (8,1.3)  {$x_1$};
-        \node[lit] (nx2c) at (7,0)    {$\neg x_2$};
-        \node[pick] (x3c)  at (9,0)    {$x_3$};
-        \draw[edg] (x1c) -- (nx2c) -- (x3c) -- (x1c);
-        \node[font=\scriptsize] at (9.1,1.0) {$C_3$};
-        \draw[conf] (x1a)  to[bend left=15]  (nx1b);
-        \draw[conf] (x1c)  to[bend right=15] (nx1b);
-        \draw[conf] (x3b)  to[bend right=15] (nx3a);
-        \draw[conf] (x2b)  to[bend right=25] (nx2c);
-        \draw[conf] (x2a)  to[bend right=30] (nx2c);
-        \draw[conf] (nx3a) to[bend right=28] (x3c);
+      \begin{tikzpicture}[scale=0.43, every node/.append style={transform shape}]
+        \node[pick]  (aa)  at (1,1.8)  {$a$};
+        \node[lit]   (ba)  at (0,0)    {$b$};
+        \node[lit]   (ca)  at (2,0)    {$c$};
+        \draw[edg] (aa) -- (ba) -- (ca) -- (aa);
+        \node[font=\scriptsize] at (-0.7,0.9) {$C_1$};
+        \node[pick]  (ndb) at (1,3.8)  {$\neg d$};
+        \node[lit]   (bb)  at (0,5.5)  {$b$};
+        \node[lit]   (ncc) at (2,5.5)  {$\neg c$};
+        \draw[edg] (ndb) -- (bb) -- (ncc) -- (ndb);
+        \node[font=\scriptsize] at (-0.7,4.6) {$C_2$};
+        \node[lit]   (nac) at (8,5.5)  {$\neg a$};
+        \node[pick]  (cc)  at (10,5.5) {$c$};
+        \node[lit]   (dc)  at (9,3.8)  {$d$};
+        \draw[edg] (nac) -- (cc) -- (dc) -- (nac);
+        \node[font=\scriptsize] at (10.7,4.6) {$C_3$};
+        \node[pick]  (ad)  at (9,1.8)  {$a$};
+        \node[lit]   (nbd) at (8,0)    {$\neg b$};
+        \node[lit]   (ndd) at (10,0)   {$\neg d$};
+        \draw[edg] (ad) -- (nbd) -- (ndd) -- (ad);
+        \node[font=\scriptsize] at (10.7,0.9) {$C_4$};
+        \draw[conf] (aa)  -- (nac);
+        \draw[conf] (ad)  to[bend left=10]  (nac);
+        \draw[conf] (ba)  to[bend right=15] (nbd);
+        \draw[conf] (bb)  to[bend right=12] (nbd);
+        \draw[conf] (ca)  to[bend left=20]  (ncc);
+        \draw[conf] (cc)  to[bend left=15]  (ncc);
+        \draw[conf] (dc)  to[bend left=10]  (ndb);
+        \draw[conf] (dc)  to[bend right=15] (ndd);
       \end{tikzpicture}
       \end{center}
       \small Orange vertices $\to$ set those literals true.
