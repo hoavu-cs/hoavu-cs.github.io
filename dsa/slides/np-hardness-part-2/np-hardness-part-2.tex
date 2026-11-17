@@ -147,6 +147,8 @@
           AND of clauses.
   \end{itemize}
 
+  \pause
+
   \begin{block}{SAT}
     Given a CNF formula $\phi$, is there a true/false assignment to the
     variables that satisfies every clause?
@@ -161,6 +163,57 @@
   \medskip
   SAT $\in \mathbf{NP}$: the certificate is a satisfying assignment; check
   each clause in time linear in the size of $\phi$.
+\end{frame}
+
+\begin{frame}{An Unsatisfiable Formula}
+  $\phi = (x_1 \lor x_2) \land (x_1 \lor \neg x_2) \land
+          (\neg x_1 \lor x_2) \land (\neg x_1 \lor \neg x_2)$
+
+  \bigskip
+  Every truth assignment fails exactly one clause:
+
+  \medskip
+  \begin{center}
+  \begin{tabular}{cc|cccc}
+    \toprule
+    $x_1$ & $x_2$ & $C_1$ & $C_2$ & $C_3$ & $C_4$ \\
+    \midrule
+    T & T & T & T & T & \alert{F} \\
+    T & F & T & T & \alert{F} & T \\
+    F & T & T & \alert{F} & T & T \\
+    F & F & \alert{F} & T & T & T \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+
+
+\end{frame}
+
+\begin{frame}{Another Unsatisfiable Formula}
+  \[
+    \phi =
+    (c_1 \lor c_2) \land (\neg c_1 \lor \neg c_2) \land
+    (c_1 \lor c_3) \land (\neg c_1 \lor \neg c_3) \land
+    (c_2 \lor c_3) \land (\neg c_2 \lor \neg c_3)
+  \]
+
+  \medskip
+  \begin{center}
+  \begin{tabular}{ccc|l}
+    \toprule
+    $c_1$ & $c_2$ & $c_3$ & first failing clause \\
+    \midrule
+    T & T & T & $\neg c_1 \lor \neg c_2$ \\
+    T & T & F & $\neg c_1 \lor \neg c_2$ \\
+    T & F & T & $\neg c_1 \lor \neg c_3$ \\
+    T & F & F & $c_2 \lor c_3$ \\
+    F & T & T & $\neg c_2 \lor \neg c_3$ \\
+    F & T & F & $c_1 \lor c_3$ \\
+    F & F & T & $c_1 \lor c_2$ \\
+    F & F & F & $c_1 \lor c_2$ \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
 \end{frame}
 
 \begin{frame}{3-SAT}
@@ -189,21 +242,12 @@
     SAT is NP-complete.
   \end{block}
 
-  \textbf{Idea.} Take any $A \in \mathbf{NP}$ with its polynomial-time
-  verifier. Write the verifier's whole computation on input $x$ as a
-  polynomial-size CNF formula whose variables are the unknown certificate
-  bits and the machine's state at each step. The formula is satisfiable
-  $\iff$ some certificate makes the verifier accept. (Proof omitted.)
-
   \pause
-  \bigskip
+
   \begin{block}{Theorem (Karp 1972)}
     3-SAT is NP-complete.
   \end{block}
-  This needs one more reduction, SAT $\le_p$ 3-SAT: split long clauses with
-  new variables, e.g.\
-  $(\ell_1 \lor \ell_2 \lor \ell_3 \lor \ell_4) \to
-   (\ell_1 \lor \ell_2 \lor z) \land (\neg z \lor \ell_3 \lor \ell_4)$.
+
 \end{frame}
 
 \begin{frame}{How to Prove $B$ Is NP-Complete}
@@ -226,10 +270,7 @@
 
   \pause
   \textbf{Why it works}: reductions compose. If $f$ runs in $O(n^c)$ and $g$
-  in $O(n^d)$, then $g \circ f$ runs in $O(n^c + n^{cd})$, and
-  \[
-    x \in \text{NP problem} \iff f(x) \in A \iff g(f(x)) \in B.
-  \]
+  in $O(n^d)$, then $g \circ f$ runs in $O(n^c + n^{cd})$.
 
   \medskip
   \alert{Direction matters}: reduce \emph{from} the known hard problem
@@ -258,30 +299,76 @@
   \textbf{Step 2: NP-hard.} Reduce 3-SAT $\le_p$ Independent Set.
 \end{frame}
 
-\begin{frame}{The Construction}
-  Given a 3-CNF formula $\phi$ with clauses $C_1, \ldots, C_k$:
+\begin{frame}{Independent Set $\in$ NP: Certificate}
+  \begin{columns}[c]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.62, every node/.append style={transform shape}]
+        \foreach \i in {0,...,11} {
+          \pgfmathsetmacro{\ang}{90 - \i * 30}
+          \node[lit, minimum size=5mm] (u\i) at (\ang:3)   {};
+          \node[lit, minimum size=5mm] (w\i) at (\ang:1.6) {};
+        }
+        \foreach \i [evaluate=\i as \j using {int(mod(\i+1,12))}] in {0,...,11}
+          { \draw[edg] (u\i)--(u\j); }
+        \foreach \i in {0,...,11} { \draw[edg] (u\i)--(w\i); }
+        \foreach \i [evaluate=\i as \j using {int(mod(\i+4,12))}] in {0,...,11}
+          { \draw[edg] (w\i)--(w\j); }
+        \foreach \i in {0,2,4,6,8,10} { \node[pick, minimum size=5mm] at (u\i) {}; }
+        \node[pick, minimum size=5mm] at (w1) {};
+        \node[pick, minimum size=5mm] at (w3) {};
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      Is there an independent set of size $8$?
 
-  \begin{itemize}
-    \item \textbf{Clause gadget}: for each clause, three vertices (one per
-          literal) joined in a \alert{triangle}. An independent set takes at
-          most one vertex per triangle.
-    \item \textbf{Conflict edges}: join every pair of vertices in different
-          triangles whose literals are \alert{complementary} ($x_r$ and
-          $\neg x_r$). An independent set never picks both.
-    \item Target size: $k$, the number of clauses.
-  \end{itemize}
+      \medskip
+      \textbf{Certificate}: the set $S$ (orange).
 
-  \bigskip
-  Size: $3k$ vertices, at most $\binom{3k}{2}$ edges. Polynomial time.
-
-  \bigskip
-  \textbf{Intuition}: choosing a vertex $=$ choosing which literal makes its
-  clause true. Conflict edges keep these choices consistent.
+      \medskip
+      \textbf{Verify}: $|S| \ge 8$, and no edge has both endpoints in $S$.
+      Time $O(n + m)$.
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{Example}
+\begin{frame}{Step 1: One Vertex per Literal, Triangle per Clause}
   $\phi = (x_1 \lor x_2 \lor \neg x_3) \land (\neg x_1 \lor x_2 \lor x_3)
          \land (x_1 \lor \neg x_2 \lor x_3)$, \quad $k = 3$.
+
+  For each clause, create one vertex per literal and connect them in a
+  \alert{triangle}. An independent set picks \alert{at most one} vertex per
+  triangle.
+
+  \begin{center}
+  \begin{tikzpicture}[scale=0.74, every node/.append style={transform shape}]
+    % C1
+    \node[lit] (x1a)  at (0,1.3)  {$x_1$};
+    \node[lit] (x2a)  at (-1,0)   {$x_2$};
+    \node[lit] (nx3a) at (1,0)    {$\neg x_3$};
+    \draw[edg] (x1a) -- (x2a) -- (nx3a) -- (x1a);
+    \node at (-1.2,1.1) {$C_1$};
+    % C2
+    \node[lit] (nx1b) at (4,4.1)  {$\neg x_1$};
+    \node[lit] (x2b)  at (3,2.8)  {$x_2$};
+    \node[lit] (x3b)  at (5,2.8)  {$x_3$};
+    \draw[edg] (nx1b) -- (x2b) -- (x3b) -- (nx1b);
+    \node at (4,2.05) {$C_2$};
+    % C3
+    \node[lit] (x1c)  at (8,1.3)  {$x_1$};
+    \node[lit] (nx2c) at (7,0)    {$\neg x_2$};
+    \node[lit] (x3c)  at (9,0)    {$x_3$};
+    \draw[edg] (x1c) -- (nx2c) -- (x3c) -- (x1c);
+    \node at (9.2,1.1) {$C_3$};
+  \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Step 2: Conflict Edges Between Complementary Literals}
+  Add a \alert{conflict edge} between every pair of vertices in
+  \emph{different} triangles whose literals are complementary
+  ($x_r$ and $\neg x_r$). An independent set can never pick both.
 
   \begin{center}
   \begin{tikzpicture}[scale=0.74, every node/.append style={transform shape}]
@@ -313,36 +400,99 @@
   \end{tikzpicture}
   \end{center}
 
-  \small Solid: clause triangles. \textcolor{mRed}{Dashed}: the six conflict
-  edges. \onslide<2->{$x_1 = x_2 = x_3 = \mathrm{T}$ satisfies $\phi$; one
-  true literal per clause gives an independent set of size 3 (orange).}
+  \small \onslide<2->{$x_1 = x_2 = x_3 = \mathrm{T}$: one true literal per
+  clause gives an independent set of size $3$ (orange).}
 \end{frame}
 
-\begin{frame}{Correctness}
-  \textbf{Claim.} $\phi$ is satisfiable $\iff$ $G$ has an independent set of
-  size $k$.
+\begin{frame}{Correctness ($\Rightarrow$)}
+  \textbf{Claim.} $\phi$ satisfiable $\Rightarrow$ $G$ has an independent set of size $k$.
 
-  \medskip
-  ($\Rightarrow$) Take a satisfying assignment. From each clause pick one
-  true literal's vertex; call the set $S$.
-  \begin{itemize}
-    \item $|S| = k$, one vertex per triangle, so no triangle edge is inside
-          $S$.
-    \item A conflict edge inside $S$ would mean $x_r$ and $\neg x_r$ are both
-          true. Impossible.
-  \end{itemize}
+  \begin{columns}[c]
+    \begin{column}{0.48\textwidth}
+      Take a satisfying assignment. From each clause pick one true literal's
+      vertex; call the set $S$.
+      \begin{itemize}
+        \item $|S| = k$, one per triangle, so no triangle edge is inside $S$.
+        \item A conflict edge inside $S$ would mean $x_r$ and $\neg x_r$ are
+              both true. Impossible.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.62, every node/.append style={transform shape}]
+        \node[pick] (x1a)  at (0,1.3)  {$x_1$};
+        \node[lit] (x2a)  at (-1,0)   {$x_2$};
+        \node[lit] (nx3a) at (1,0)    {$\neg x_3$};
+        \draw[edg] (x1a) -- (x2a) -- (nx3a) -- (x1a);
+        \node[font=\scriptsize] at (-1.1,1.0) {$C_1$};
+        \node[lit] (nx1b) at (4,4.1)  {$\neg x_1$};
+        \node[pick] (x2b)  at (3,2.8)  {$x_2$};
+        \node[lit] (x3b)  at (5,2.8)  {$x_3$};
+        \draw[edg] (nx1b) -- (x2b) -- (x3b) -- (nx1b);
+        \node[font=\scriptsize] at (4,2.05) {$C_2$};
+        \node[lit] (x1c)  at (8,1.3)  {$x_1$};
+        \node[lit] (nx2c) at (7,0)    {$\neg x_2$};
+        \node[pick] (x3c)  at (9,0)    {$x_3$};
+        \draw[edg] (x1c) -- (nx2c) -- (x3c) -- (x1c);
+        \node[font=\scriptsize] at (9.1,1.0) {$C_3$};
+        \draw[conf] (x1a)  to[bend left=15]  (nx1b);
+        \draw[conf] (x1c)  to[bend right=15] (nx1b);
+        \draw[conf] (x3b)  to[bend right=15] (nx3a);
+        \draw[conf] (x2b)  to[bend right=25] (nx2c);
+        \draw[conf] (x2a)  to[bend right=30] (nx2c);
+        \draw[conf] (nx3a) to[bend right=28] (x3c);
+      \end{tikzpicture}
+      \end{center}
+      \small $x_1{=}x_2{=}x_3{=}\mathrm{T}$: orange = independent set of size 3.
+    \end{column}
+  \end{columns}
+\end{frame}
 
-  \pause
-  ($\Leftarrow$) Let $S$ be an independent set of size $k$.
-  \begin{itemize}
-    \item Each triangle holds at most one vertex of $S$, and there are $k$
-          triangles: exactly one per triangle.
-    \item Make every literal in $S$ true. This is consistent: $S$ has no
-          conflict edge, so it never contains both $x_r$ and $\neg x_r$.
-          Set the remaining variables arbitrarily.
-    \item Each clause contains the true literal chosen from its triangle.
-          \hfill $\square$
-  \end{itemize}
+\begin{frame}{Correctness ($\Leftarrow$)}
+  \textbf{Claim.} $G$ has an independent set of size $k$ $\Rightarrow$ $\phi$ is satisfiable.
+
+  \begin{columns}[c]
+    \begin{column}{0.48\textwidth}
+      Let $S$ be an independent set of size $k$.
+      \begin{itemize}
+        \item Each triangle holds at most one vertex of $S$, and there are $k$
+              triangles: exactly one per triangle.
+        \item Make every literal in $S$ true. Consistent: $S$ has no conflict
+              edge, so it never contains both $x_r$ and $\neg x_r$.
+              Set remaining variables arbitrarily.
+        \item Each clause contains the true literal chosen from its triangle.
+              \hfill $\square$
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.62, every node/.append style={transform shape}]
+        \node[pick] (x1a)  at (0,1.3)  {$x_1$};
+        \node[lit] (x2a)  at (-1,0)   {$x_2$};
+        \node[lit] (nx3a) at (1,0)    {$\neg x_3$};
+        \draw[edg] (x1a) -- (x2a) -- (nx3a) -- (x1a);
+        \node[font=\scriptsize] at (-1.1,1.0) {$C_1$};
+        \node[lit] (nx1b) at (4,4.1)  {$\neg x_1$};
+        \node[pick] (x2b)  at (3,2.8)  {$x_2$};
+        \node[lit] (x3b)  at (5,2.8)  {$x_3$};
+        \draw[edg] (nx1b) -- (x2b) -- (x3b) -- (nx1b);
+        \node[font=\scriptsize] at (4,2.05) {$C_2$};
+        \node[lit] (x1c)  at (8,1.3)  {$x_1$};
+        \node[lit] (nx2c) at (7,0)    {$\neg x_2$};
+        \node[pick] (x3c)  at (9,0)    {$x_3$};
+        \draw[edg] (x1c) -- (nx2c) -- (x3c) -- (x1c);
+        \node[font=\scriptsize] at (9.1,1.0) {$C_3$};
+        \draw[conf] (x1a)  to[bend left=15]  (nx1b);
+        \draw[conf] (x1c)  to[bend right=15] (nx1b);
+        \draw[conf] (x3b)  to[bend right=15] (nx3a);
+        \draw[conf] (x2b)  to[bend right=25] (nx2c);
+        \draw[conf] (x2a)  to[bend right=30] (nx2c);
+        \draw[conf] (nx3a) to[bend right=28] (x3c);
+      \end{tikzpicture}
+      \end{center}
+      \small Orange vertices $\to$ set those literals true.
+    \end{column}
+  \end{columns}
 \end{frame}
 
 % =========================================================================
@@ -357,14 +507,70 @@
     \]
   \end{block}
 
+  \bigskip
+  Identical to LP except the variables must take \alert{integer} values.
+  That single constraint makes it NP-hard (LP is in $\mathbf{P}$).
+\end{frame}
+
+\begin{frame}{ILP: Yes Instance}
+  \[
+    \begin{aligned}
+      y_1 + y_2  &\ge 3 \\
+      2y_1 + y_2 &\ge 4 \\
+      y_1,\, y_2 &\in \mathbb{Z}_{\ge 0}
+    \end{aligned}
+  \]
+
+  \bigskip
+  \textbf{Certificate}: $y_1 = 1,\; y_2 = 2$.
+
+  \medskip
+  \textbf{Check}:
+  \[
+    1 + 2 = 3 \ge 3 \quad \checkmark \qquad
+    2 \cdot 1 + 2 = 4 \ge 4 \quad \checkmark
+  \]
+
+  \bigskip
+  \begin{center}
+    Both constraints satisfied. This is a \alert{yes} instance.
+  \end{center}
+\end{frame}
+
+\begin{frame}{ILP: No Instance}
+  \[
+    \begin{aligned}
+      y_1 + y_2 &\ge 5 \\
+     -y_1       &\ge -2 \quad (\text{i.e.\ } y_1 \le 2) \\
+     -y_2       &\ge -2 \quad (\text{i.e.\ } y_2 \le 2) \\
+      y_1,\, y_2 &\in \mathbb{Z}_{\ge 0}
+    \end{aligned}
+  \]
+
+  \bigskip
+  Constraints 2 and 3 force $y_1 \le 2$ and $y_2 \le 2$, so
+  \[
+    y_1 + y_2 \le 4 < 5.
+  \]
+
+  \begin{center}
+    Constraint 1 can never be met. This is a \alert{no} instance.
+  \end{center}
+\end{frame}
+
+\begin{frame}{ILP is NP-Complete}
   \begin{block}{Theorem}
     ILP Feasibility is NP-complete.
   \end{block}
 
-  \textbf{Step 1: in NP.} Certificate: the integers $y_i$; check each
-  constraint. \small(Subtle point: one must also show that if a solution
-  exists, one with polynomially many bits exists. This is true but not
-  obvious. For 0/1 variables it is immediate.)
+  \medskip
+  \textbf{Step 1: in NP.} Certificate: the integers $y_i$; verify each
+  constraint in polynomial time.
+
+  \smallskip
+  \small (Subtle: one must also show that a feasible instance always has a
+  solution with polynomially many bits. True but non-obvious. For 0/1
+  variables it is immediate.)
 
   \normalsize
   \medskip
