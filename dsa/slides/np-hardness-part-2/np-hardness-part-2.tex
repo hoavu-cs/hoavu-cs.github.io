@@ -72,10 +72,9 @@
 
   \begin{itemize}
     \item $X$ is at least as hard as every problem in NP.
-    \item If an NP-hard $X$ had a polynomial-time algorithm, then every
-          problem in NP would too: $\mathbf{P} = \mathbf{NP}$.
-    \item An NP-hard problem need not be in NP, and need not even be a
-          decision problem. It may be strictly harder.
+    \item A poly-time algorithm for any NP-hard problem would give
+          $\mathbf{P} = \mathbf{NP}$.
+    \item Need not be in NP — can be strictly harder.
   \end{itemize}
 \end{frame}
 
@@ -120,9 +119,8 @@
 \end{frame}
 
 \begin{frame}{Why Care?}
-  Proving a problem NP-complete is strong evidence that \alert{no}
-  polynomial-time algorithm exists: finding one would solve thousands of
-  problems that have resisted decades of effort, and settle P vs.\ NP.
+  NP-complete $\approx$ strong evidence no poly-time algorithm exists.
+  Finding one would settle P vs.\ NP.
 
   \bigskip
   What to do instead:
@@ -130,8 +128,8 @@
     \item solve \alert{special cases} (trees, small $k$, bounded weights),
     \item settle for an \alert{approximation} with a guarantee,
     \item use \alert{heuristics} that work well in practice,
-    \item accept an exponential algorithm that is fast enough for the inputs
-          you have (e.g.\ dynamic programming, SAT solvers).
+    \item use exponential algorithms fast enough in practice
+          (e.g.\ branch-and-bound, SAT solvers).
   \end{itemize}
 \end{frame}
 
@@ -161,8 +159,8 @@
 
   \pause
   \medskip
-  SAT $\in \mathbf{NP}$: the certificate is a satisfying assignment; check
-  each clause in time linear in the size of $\phi$.
+  SAT $\in \mathbf{NP}$: certificate = satisfying assignment;
+  verify each clause in linear time.
 \end{frame}
 
 \begin{frame}{An Unsatisfiable Formula}
@@ -227,9 +225,8 @@
   \begin{itemize}
     \item 3-SAT $\in \mathbf{NP}$, for the same reason as SAT.
     \item 3-SAT is a special case of SAT, so it is no harder.
-    \item Its rigid structure makes it a convenient starting point for
-          reductions: every clause can become the same small
-          \alert{gadget}.
+    \item Rigid structure: every clause becomes the same small
+          \alert{gadget} — convenient for reductions.
   \end{itemize}
 
   \bigskip
@@ -269,10 +266,7 @@
   \end{center}
 
   \pause
-  \textbf{Why it works}: reductions compose. If $f$ runs in $O(n^c)$ and $g$
-  in $O(n^d)$, then $g \circ f$ runs in $O(n^c + n^{cd})$.
-
-  \medskip
+  \textbf{Why it works}: reductions compose. \\
   \alert{Direction matters}: reduce \emph{from} the known hard problem
   \emph{to} the new one.
 \end{frame}
@@ -473,9 +467,9 @@
       \begin{itemize}
         \item Each triangle holds at most one vertex of $S$, and there are $k$
               triangles: exactly one per triangle.
-        \item Make every literal in $S$ true. Consistent: $S$ has no conflict
-              edge, so it never contains both $\ell$ and $\neg \ell$.
-              Set remaining variables arbitrarily.
+        \item Set each literal in $S$ to true. No conflict edge in $S$
+              $\Rightarrow$ never both $\ell$ and $\neg\ell$ true.
+              Set other variables freely.
         \item Each clause contains the true literal chosen from its triangle.
               \hfill $\square$
       \end{itemize}
@@ -591,9 +585,8 @@
   constraint in polynomial time.
 
   \smallskip
-  \small (Subtle: one must also show that a feasible instance always has a
-  solution with polynomially many bits. True but non-obvious. For 0/1
-  variables it is immediate.)
+  \small (Subtle: feasible instances have solutions with polynomially many
+  bits — true but non-obvious; immediate for 0/1 variables.)
 
   \normalsize
   \medskip
@@ -622,17 +615,17 @@
   \[
     \sum_{i \in P_j} y_i + \sum_{i \in N_j} (1 - y_i) \;\ge\; 1.
   \]
-  The left side counts the true literals in $C_j$; requiring it $\ge 1$
-  means at least one literal is true.
+  The left side counts true literals in $C_j$;
+  it must be $\ge 1$ — at least one literal true.
 
   \bigskip
   \textbf{Example.} \; $C = (x_1 \lor \neg x_2 \lor x_3)$:
-  $P = \{1,3\}$, $N = \{2\}$, so the constraint is
+  $P = \{1,3\}$, $N = \{2\}$, constraint:
   \[
     y_1 + (1 - y_2) + y_3 \;\ge\; 1.
   \]
-  With $y_1=1, y_2=0, y_3=1$: $\;1 + 1 + 1 = 3 \ge 1$. \quad
-  With $y_1=0, y_2=1, y_3=0$: $\;0 + 0 + 0 = 0 < 1$ — clause not satisfied.
+  $y_1{=}1, y_2{=}0, y_3{=}1$: $\;1+1+1=3\ge1$ (\emph{satisfied}). \quad
+  $y_1{=}0, y_2{=}1, y_3{=}0$: $\;0+0+0=0<1$ (\emph{fails}).
 \end{frame}
 
 \begin{frame}{The Full Construction}
@@ -716,9 +709,8 @@
   \end{columns}
 
   \bigskip
-  \small Without integrality, $y_1 = \tfrac{1}{2}$ would work: plain
-  linear programming is in $\mathbf{P}$, and integrality is what makes ILP
-  hard.
+  \small Without integrality, $y_1 = \tfrac{1}{2}$ works — LP is in
+  $\mathbf{P}$. Integrality is what makes ILP hard.
 \end{frame}
 
 % =========================================================================
@@ -757,9 +749,9 @@
   \mathbb{Z}$.
 
   \medskip
-  \textbf{(d)} No, wrong direction. It shows Independent Set is \emph{no
-  harder} than SAT (true for every problem in NP, by Cook-Levin). Hardness
-  needs SAT (or 3-SAT) $\le_p$ Independent Set.
+  \textbf{(d)} No — wrong direction. It shows IS $\le_p$ SAT (IS is
+  no harder than SAT), not that SAT $\le_p$ IS. For hardness we need
+  3-SAT $\le_p$ Independent Set.
 \end{frame}
 
 % =========================================================================
